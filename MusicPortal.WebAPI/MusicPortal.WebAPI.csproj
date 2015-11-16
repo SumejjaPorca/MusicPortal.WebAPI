@@ -243,6 +243,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Binding_Models\" />
+    <Folder Include="Domain_Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
