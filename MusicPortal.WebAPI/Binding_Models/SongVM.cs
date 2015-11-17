@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace MusicPortal.WebAPI.Domain_Models
+namespace MusicPortal.WebAPI.Binding_Models
 {
-    public class Song
+    public class SongVM
     {
         public int Id { get; set; }
         public string Name { get; set; }
