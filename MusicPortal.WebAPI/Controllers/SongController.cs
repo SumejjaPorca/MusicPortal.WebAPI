@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace MusicPortal.WebAPI.Controllers
@@ -28,12 +29,12 @@ namespace MusicPortal.WebAPI.Controllers
         [Route("")]
         [AllowAnonymous]
         [HttpGet]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             HttpResponseMessage responseMsg;
             try
             {
-                List<SongVM> songs = _mngr.GetAll();
+                List<SongVM> songs = await _mngr.GetAllAsync();
                 responseMsg = _helper.CreateCustomResponseMsg(songs, HttpStatusCode.OK);
 
             }

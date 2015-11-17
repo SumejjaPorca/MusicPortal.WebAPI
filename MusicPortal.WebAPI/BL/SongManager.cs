@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Web;
+using System.Threading.Tasks;
 
 namespace MusicPortal.WebAPI.BL
 {
@@ -15,11 +16,16 @@ namespace MusicPortal.WebAPI.BL
             this._db = db;
         }
 
-        public List<SongVM> GetAll(){
-            return _db.Songs.Select(s => new SongVM{
-                Id = s.Id,
-                Name = s.Name
-            }).ToList();
+        public Task<List<SongVM> > GetAllAsync(){
+            return Task.Run(() =>
+            {
+                return _db.Songs.Select(s => new SongVM
+                {
+                    Id = s.Id,
+                    Name = s.Name
+                }).ToList();
+            });
+
         }
     }
 }
