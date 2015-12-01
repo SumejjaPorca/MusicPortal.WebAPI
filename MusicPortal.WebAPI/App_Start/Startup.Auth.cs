@@ -10,6 +10,7 @@ using Microsoft.Owin.Security.OAuth;
 using Owin;
 using MusicPortal.WebAPI.Providers;
 using MusicPortal.WebAPI.Models;
+using MusicPortal.WebAPI.Data;
 
 namespace MusicPortal.WebAPI
 {
@@ -23,7 +24,7 @@ namespace MusicPortal.WebAPI
         public void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context and user manager to use a single instance per request
-            app.CreatePerOwinContext(ApplicationDbContext.Create);
+            app.CreatePerOwinContext(MusicPortalDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
 
             // Enable the application to use a cookie to store information for the signed in user
