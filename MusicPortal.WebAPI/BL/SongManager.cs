@@ -36,13 +36,14 @@ namespace MusicPortal.WebAPI.BL
 
 		private static List<string> FuzzySearch(
 			string word,
-			List<string> wordList,
+			List<SongVM> songList,
 			double fuzzyness)
 		{
-			List<string> foundWords = new List<string>();
+			List<string> foundSongs = new List<SongVM>();
 
-			foreach (string s in wordList)
+			foreach (SongVM song in songList)
 			{
+				string s = song.Name;
 				// Calculate the Levenshtein-distance:
 				int levenshteinDistance =
 				    LevenshteinDistance(word, s);
@@ -55,9 +56,9 @@ namespace MusicPortal.WebAPI.BL
 
 				// Match?
 				if (score > fuzzyness)
-				    foundWords.Add(s);
+				    foundSongs.Add(song);
 			}
-			return foundWords;
+			return foundSongs;
 		}
 
 		private  static int LevenshteinDistance(string src, string dest) {
