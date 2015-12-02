@@ -203,7 +203,14 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\SongController.cs" />
     <Compile Include="Data\MusicPortalDbContext.cs" />
+    <Compile Include="Domain_Models\Author.cs" />
+    <Compile Include="Domain_Models\HeartedSong.cs" />
+    <Compile Include="Domain_Models\Playlist.cs" />
+    <Compile Include="Domain_Models\PlaylistSong.cs" />
     <Compile Include="Domain_Models\Song.cs" />
+    <Compile Include="Domain_Models\SongUser.cs" />
+    <Compile Include="Domain_Models\Tag.cs" />
+    <Compile Include="Domain_Models\TagSong.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

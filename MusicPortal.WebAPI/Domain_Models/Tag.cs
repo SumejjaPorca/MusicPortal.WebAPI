@@ -8,14 +8,12 @@ using System.Collections.ObjectModel;
 
 namespace MusicPortal.WebAPI.Domain_Models
 {
-    public class Song
+    public class Tag
     {
         [Key]
-        public int Id { get; set; }
-        [DisplayName("Name of the song")]
-        public string Name { get; set; }
-        public string Link { get; set; }
-
-        public virtual Collection<Tag> Tags { get; set; }
+        public string Id { get; set; }
+        [DisplayName("TagName")]
+        public String Name { get; set; }
+        public virtual Collection<Song> Songs { get; set; }
     }
 }
