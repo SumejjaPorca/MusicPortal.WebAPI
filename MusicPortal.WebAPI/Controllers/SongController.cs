@@ -1,4 +1,6 @@
-﻿using MusicPortal.WebAPI.Binding_Models;
+﻿
+
+using MusicPortal.WebAPI.Binding_Models;
 using MusicPortal.WebAPI.BL;
 using MusicPortal.WebAPI.Data;
 using MusicPortal.WebAPI.Providers;
@@ -35,6 +37,26 @@ namespace MusicPortal.WebAPI.Controllers
             try
             {
                 List<SongVM> songs = await _mngr.GetAllAsync();
+                responseMsg = _helper.CreateCustomResponseMsg(songs, HttpStatusCode.OK);
+
+            }
+            catch (Exception e)
+            {
+                responseMsg = _helper.CreateErrorResponseMsg(new HttpError(e.Message), HttpStatusCode.BadRequest);
+            }
+            return new AsyncResult(responseMsg);
+        }
+
+		// GET api/Song/searchQuery
+        [Route("")]
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IHttpActionResult> Get(string searchQuery)
+        {
+            HttpResponseMessage responseMsg;
+            try
+            {
+                List<SongVM> songs = _mngr.GetFuzzy(searchQuery);
                 responseMsg = _helper.CreateCustomResponseMsg(songs, HttpStatusCode.OK);
 
             }
