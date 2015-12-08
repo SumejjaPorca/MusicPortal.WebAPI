@@ -11,6 +11,9 @@ using Owin;
 using MusicPortal.WebAPI.Providers;
 using MusicPortal.WebAPI.Models;
 using MusicPortal.WebAPI.Data;
+using System.Web.Cors;
+using Microsoft.Owin.Cors;
+using System.Threading.Tasks;
 
 namespace MusicPortal.WebAPI
 {
@@ -23,6 +26,23 @@ namespace MusicPortal.WebAPI
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
+            CorsPolicy corsPolicy = new System.Web.Cors.CorsPolicy
+            {
+                AllowAnyHeader = true,
+                AllowAnyMethod = true
+            };
+            
+            corsPolicy.Origins.Add(@"http://localhost:3000");
+
+            var corsOptions = new CorsOptions
+            {
+                PolicyProvider = new CorsPolicyProvider
+                {
+                    PolicyResolver = context => Task.FromResult(corsPolicy)
+                }
+            };
+            
+            app.UseCors(corsOptions); //Microsoft.Owin.Cors.CorsOptions.AllowAll
             // Configure the db context and user manager to use a single instance per request
             app.CreatePerOwinContext(MusicPortalDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);

@@ -48,7 +48,7 @@ namespace MusicPortal.WebAPI.Controllers
         }
 
 		// GET api/Song/searchQuery
-        [Route("")]
+        /*[Route("{searchQuery}")]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IHttpActionResult> Get(string searchQuery)
@@ -56,7 +56,7 @@ namespace MusicPortal.WebAPI.Controllers
             HttpResponseMessage responseMsg;
             try
             {
-                List<SongVM> songs = _mngr.GetFuzzy(searchQuery);
+                List<Domain_Models.Song> songs = _mngr.GetFuzzy(searchQuery);
                 responseMsg = _helper.CreateCustomResponseMsg(songs, HttpStatusCode.OK);
 
             }
@@ -65,6 +65,6 @@ namespace MusicPortal.WebAPI.Controllers
                 responseMsg = _helper.CreateErrorResponseMsg(new HttpError(e.Message), HttpStatusCode.BadRequest);
             }
             return new AsyncResult(responseMsg);
-        }
+        }*/
     }
 }

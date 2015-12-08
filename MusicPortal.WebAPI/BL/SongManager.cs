@@ -28,20 +28,20 @@ namespace MusicPortal.WebAPI.BL
 
         }
 
-		public List<SongVM> GetFuzzy(string songName){
+		/*public List<SongVM> GetFuzzy(string songName){
 			// third param is the fuzzyness so change it in order to adjust
 			// 0 means crisp, 1 totally fuzzy
             return this.FuzzySearch(songName, db.Songs.ToList(), 0.5);
-        }
+        }*/
 
-		private static List<string> FuzzySearch(
+		private static List<Domain_Models.Song> FuzzySearch(
 			string word,
-			List<SongVM> songList,
+			List<Domain_Models.Song> songList,
 			double fuzzyness)
 		{
-			List<string> foundSongs = new List<SongVM>();
+			List<Domain_Models.Song> foundSongs = new List<Domain_Models.Song>();
 
-			foreach (SongVM song in songList)
+			foreach (Domain_Models.Song song in songList)
 			{
 				string s = song.Name;
 				// Calculate the Levenshtein-distance:

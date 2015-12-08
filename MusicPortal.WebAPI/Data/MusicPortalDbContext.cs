@@ -12,6 +12,7 @@ namespace MusicPortal.WebAPI.Data
     public class MusicPortalDbContext:IdentityDbContext<ApplicationUser>
     {
         public DbSet<Song> Songs { get; set; }
+        
          public MusicPortalDbContext()
                 : base("DefaultConnection", throwIfV1Schema: false)
             {

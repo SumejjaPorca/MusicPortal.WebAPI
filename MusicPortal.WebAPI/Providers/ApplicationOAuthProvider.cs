@@ -30,12 +30,24 @@ namespace MusicPortal.WebAPI.Providers
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
+            
+            if(context.UserName == null)
+            {
+                context.SetError("username_required", "The username is required.");
+                return;
+            }
+
+            if(context.Password == null)
+            {
+                context.SetError("password_required", "The password is required.");
+                return;
+            }
 
             ApplicationUser user = await userManager.FindAsync(context.UserName, context.Password);
 
             if (user == null)
             {
-                context.SetError("invalid_grant", "The user name or password is incorrect.");
+                context.SetError("invalid_grant", "The username or password is incorrect.");
                 return;
             }
 
