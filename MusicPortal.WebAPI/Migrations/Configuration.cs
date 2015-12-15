@@ -9,7 +9,7 @@ namespace MusicPortal.WebAPI.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(MusicPortal.WebAPI.Data.MusicPortalDbContext context)

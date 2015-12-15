@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Web;
 using System.Threading.Tasks;
+using MusicPortal.WebAPI.Domain_Models;
 
 namespace MusicPortal.WebAPI.BL
 {
@@ -16,7 +17,7 @@ namespace MusicPortal.WebAPI.BL
             this._db = db;
         }
 
-        public Task<List<SongVM> > GetAllAsync(){
+        public Task<List<SongVM> > GetAllAsync() {
             return Task.Run(() =>
             {
                 return _db.Songs.Select(s => new SongVM
@@ -28,15 +29,36 @@ namespace MusicPortal.WebAPI.BL
 
         }
 
-		/*public List<SongVM> GetFuzzy(string songName){
+        public SongVM GetById(long id) {
+            Song songById = _db.Songs.Where(x => x.Id == id).FirstOrDefault();
+
+            return new SongVM(songById);
+        }
+
+        public SongVM CreateSong(SongVM song) {
+            Song createdSong = new Song() { Name = song.Name };
+            createdSong = _db.Songs.Add(createdSong);
+            _db.SaveChanges();
+                
+            return new SongVM(createdSong);
+        }
+
+		public List<SongVM> GetFuzzy(string songName){
 			// third param is the fuzzyness so change it in order to adjust
 			// 0 means crisp, 1 totally fuzzy
-            return this.FuzzySearch(songName, db.Songs.ToList(), 0.5);
-        }*/
+            List<Song> songs = FuzzySearch(songName, _db.Songs.ToList(), 0.5);
 
-		private static List<Domain_Models.Song> FuzzySearch(
+            List<SongVM> songModels = new List<SongVM>();
+            foreach (var song in songs) {
+                songModels.Add(new SongVM(song));
+            }
+
+            return songModels;
+        }
+
+		private List<Domain_Models.Song> FuzzySearch(
 			string word,
-			List<Domain_Models.Song> songList,
+			List<Song> songList,
 			double fuzzyness)
 		{
 			List<Domain_Models.Song> foundSongs = new List<Domain_Models.Song>();
@@ -102,5 +124,38 @@ namespace MusicPortal.WebAPI.BL
 
 			return d[str1.Length, str2.Length];
 		}
+
+        public List<SongVM> GetByTagName(string tagName) {
+            List<Song> songsByTagName = 
+                _db.Songs.Include("Tags")
+                .Where(x => x.Tags.Where(y => y.Name == tagName).Count() >= 1).ToList();
+            
+            List<SongVM> songModelsByTagName = new List<SongVM>();
+            foreach (var song in songsByTagName) {
+                songModelsByTagName.Add(new SongVM(song));
+            }
+
+            return songModelsByTagName;
+        }
+
+        public SongVM UpdateSong(SongVM song) {
+            Song updatedSong = _db.Songs.Where(x => x.Id == song.Id).FirstOrDefault();
+
+            updatedSong.Name = song.Name;
+            updatedSong.Link = song.Link;
+
+            _db.SaveChanges();
+
+            return new SongVM(updatedSong);
+        }
+
+        public SongVM DeleteSong(long songId) {
+            Song removedSong = _db.Songs.Remove(_db.Songs.Where(x => x.Id == songId).FirstOrDefault());
+
+            _db.SaveChanges();
+
+            return new SongVM(removedSong);
+        } 
+
     }
 }

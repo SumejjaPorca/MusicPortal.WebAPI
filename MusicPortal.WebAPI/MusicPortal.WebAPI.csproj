@@ -213,13 +213,15 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Binding_Models\SongVM.cs" />
+    <Compile Include="Binding_Models\UserVM.cs" />
     <Compile Include="BL\PlaylistManager.cs" />
     <Compile Include="BL\SongManager.cs" />
+    <Compile Include="BL\UserManager.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\SongController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Data\MusicPortalDbContext.cs" />
     <Compile Include="Domain_Models\Author.cs" />
-    <Compile Include="Domain_Models\HeartedSong.cs" />
     <Compile Include="Domain_Models\Playlist.cs" />
     <Compile Include="Domain_Models\PlaylistSong.cs" />
     <Compile Include="Domain_Models\Song.cs" />
@@ -228,14 +230,6 @@
     <Compile Include="Domain_Models\TagSong.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201511180253433_First.cs" />
-    <Compile Include="Migrations\201511180253433_First.Designer.cs">
-      <DependentUpon>201511180253433_First.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201512021220101_domain models.cs" />
-    <Compile Include="Migrations\201512021220101_domain models.Designer.cs">
-      <DependentUpon>201512021220101_domain models.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -289,14 +283,6 @@
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
     <None Include="Properties\PublishProfiles\bezze.pubxml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201511180253433_First.resx">
-      <DependentUpon>201511180253433_First.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201512021220101_domain models.resx">
-      <DependentUpon>201512021220101_domain models.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

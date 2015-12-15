@@ -7,21 +7,18 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 
-namespace MusicPortal.WebAPI.Data
-{
-    public class MusicPortalDbContext:IdentityDbContext<ApplicationUser>
-    {
-        public DbSet<Song> Songs { get; set; }
-        
-         public MusicPortalDbContext()
-                : base("DefaultConnection", throwIfV1Schema: false)
-            {
- 
-            }
+namespace MusicPortal.WebAPI.Data {
 
-         public static MusicPortalDbContext Create()
-            {
-                return new MusicPortalDbContext();
-            }
+    public class MusicPortalDbContext : IdentityDbContext<ApplicationUser> {
+        public DbSet<Song> Songs { get; set; }
+
+        public MusicPortalDbContext() : base("DefaultConnection", throwIfV1Schema: false) {
+            
+        }
+
+        public static MusicPortalDbContext Create() {
+            return new MusicPortalDbContext();
+        }
     }
+
 }
