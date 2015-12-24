@@ -202,23 +202,28 @@ namespace MusicPortal.WebAPI.BL
         }
 
         public void PlaySong(int songId, string userId) {
-            //TODO: scale popularities and/or use Gaussian 
-            List<int> tagIds = _db.TagSongs.Where(t => t.SongId == songId).Select(t => t.Id).ToList();
-            List<Tag> tags = _db.Tags.Where(t => tagIds.Contains(t.Id)).ToList();
-            foreach (Tag t in tags) {
-                TagUser tagUser = _db.TagUsers.FirstOrDefault(tu => tu.TagId == t.Id && tu.UserId == userId);
-                if (tagUser != null)
-                    tagUser.Popularity = tagUser.Popularity + 1;
-                else
-                    _db.TagUsers.Add(new TagUser {
-                        Popularity = 1,
-                        TagId = t.Id,
-                        UserId = userId
-                    });
-                t.Popularity = t.Popularity + 1;
+            if (userId != null)
+            {
+                //TODO: scale popularities and/or use Gaussian 
+                List<int> tagIds = _db.TagSongs.Where(t => t.SongId == songId).Select(t => t.Id).ToList();
+                List<Tag> tags = _db.Tags.Where(t => tagIds.Contains(t.Id)).ToList();
+                foreach (Tag t in tags)
+                {
+                    TagUser tagUser = _db.TagUsers.FirstOrDefault(tu => tu.TagId == t.Id && tu.UserId == userId);
+                    if (tagUser != null)
+                        tagUser.Popularity = tagUser.Popularity + 1;
+                    else
+                        _db.TagUsers.Add(new TagUser
+                        {
+                            Popularity = 1,
+                            TagId = t.Id,
+                            UserId = userId
+                        });
+                    t.Popularity = t.Popularity + 1;
+                }
+                _db.SaveChanges();
             }
-            _db.SaveChanges();
-        }
+            }
 
     }
 }

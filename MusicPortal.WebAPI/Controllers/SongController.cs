@@ -98,6 +98,28 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
+        // GET api/Song/{id}/play
+        [Route("{id}/play")]
+        [AllowAnonymous]
+        [HttpGet]
+        public HttpResponseMessage PlaySong(int id)
+        {
+            HttpResponseMessage responseMsg;
+            try
+            {
+                string userId = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
+                if (userId != null)
+                    _mngr.PlaySong(id, userId);
+                responseMsg = new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                responseMsg = _helper.CreateErrorResponseMsg(new HttpError(e.Message), HttpStatusCode.BadRequest);
+            }
+
+            return responseMsg;
+        }
+
         // POST api/Song
         [Route("")]
         [Authorize]
@@ -142,6 +164,7 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
+        //TODO: manage this method, either delete it or add creatorId in Song entity
         // DELETE api/Song
         [Route("{songId}")]
         [Authorize]
