@@ -8,21 +8,16 @@ using System.Web;
 
 namespace MusicPortal.WebAPI.Domain_Models
 {
-    public class SongUser
+    public class HeartedSong
     {
         [Key]
         public string Id { get; set; }
-
+        public string UserId { get; set; }
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
-        public string UserId { get; set; }
-
+        public int SongId { get; set; }
         [ForeignKey("SongId")]
         public Song Song { get; set; }
-        public string SongId { get; set; }
-
-        public DateTime Date { get; set; }
-
         public bool IsHearted { get; set; }
     }
 }

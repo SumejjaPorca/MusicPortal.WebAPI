@@ -11,9 +11,13 @@ namespace MusicPortal.WebAPI.Domain_Models
     {
         [Key]
         public string Id { get; set; }
-        public string SongId { get; set; }
+        public int SongId { get; set; }
 
         [ForeignKey("SongId")]
         public Song Song { get; set; }
+        public int TagId { get; set; }
+
+        [ForeignKey("TagId")]
+        public Tag Tag { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace MusicPortal.WebAPI.Domain_Models
     public class Song
     {
         [Key]
-        public long Id { get; set; }
+        public int Id { get; set; }
         [DisplayName("Name of the song")]
         public string Name { get; set; }
         public string Link { get; set; }
