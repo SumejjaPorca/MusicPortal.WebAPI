@@ -21,6 +21,7 @@ namespace MusicPortal.WebAPI.Models
 
 
         public virtual Collection<HeartedSong> HeartedSongs { get; set; }
+        public virtual Collection<TagUser> Tags { get; set; }
 
     }
 

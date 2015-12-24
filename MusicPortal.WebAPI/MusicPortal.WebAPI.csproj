@@ -232,6 +232,7 @@
     <Compile Include="Domain_Models\HeartedSong.cs" />
     <Compile Include="Domain_Models\Tag.cs" />
     <Compile Include="Domain_Models\TagSong.cs" />
+    <Compile Include="Domain_Models\TagUser.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

@@ -26,6 +26,8 @@ namespace MusicPortal.WebAPI.Data {
         public static MusicPortalDbContext Create() {
             return new MusicPortalDbContext();
         }
+
+        public DbSet<TagUser> TagUsers { get; set; }
     }
 
 }
