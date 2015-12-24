@@ -212,8 +212,10 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Binding_Models\NewSongVM.cs" />
     <Compile Include="Binding_Models\SongVM.cs" />
     <Compile Include="Binding_Models\UserVM.cs" />
+    <Compile Include="BL\AIManager.cs" />
     <Compile Include="BL\PlaylistManager.cs" />
     <Compile Include="BL\SongManager.cs" />
     <Compile Include="BL\UserManager.cs" />
@@ -222,6 +224,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Data\MusicPortalDbContext.cs" />
     <Compile Include="Domain_Models\Author.cs" />
+    <Compile Include="Domain_Models\AuthorSong.cs" />
     <Compile Include="Domain_Models\Playlist.cs" />
     <Compile Include="Domain_Models\PlaylistSong.cs" />
     <Compile Include="Domain_Models\Song.cs" />

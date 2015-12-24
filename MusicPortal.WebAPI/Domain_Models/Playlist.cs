@@ -9,7 +9,7 @@ namespace MusicPortal.WebAPI.Domain_Models
 {
     public class Playlist
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public virtual Collection<Song> Songs { get; set; }
     }
 }

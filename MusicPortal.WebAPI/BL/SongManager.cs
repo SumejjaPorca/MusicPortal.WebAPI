@@ -35,9 +35,45 @@ namespace MusicPortal.WebAPI.BL
             return new SongVM(songById);
         }
 
-        public SongVM CreateSong(SongVM song) {
-            Song createdSong = new Song() { Name = song.Name };
-            createdSong = _db.Songs.Add(createdSong);
+        public SongVM CreateSong(NewSongVM song) {
+            Author author = _db.Authors.FirstOrDefault(a => a.Name == song.AuthorName);
+            if (author == null)
+                _db.Authors.Add(new Author
+                {
+                    Name = song.AuthorName
+                });
+            Song createdSong = new Song() { 
+                Name = song.Name,
+                Link = song.Link
+            };
+            _db.Songs.Add(createdSong);
+            AuthorSong authorSong = new AuthorSong { 
+                AuthorId = author.Id,
+                SongId = createdSong.Id
+            };
+            _db.AuthorSongs.Add(authorSong);
+
+            //New tag managing
+            Tag genreTag = _db.Tags.FirstOrDefault(t => t.Id == song.GenreTagId);
+            if (genreTag == null)
+                //okay, this should never EVER happen
+                throw new Exception("That genre doesn't exist in our tag database anymore.");
+            Tag authorTag = _db.Tags.FirstOrDefault(t => t.Name == song.AuthorName && t.ParentId == genreTag.Id);
+            if (authorTag == null)
+                //we need to add another tag for this author for this genre for better search results
+                _db.Tags.Add(new Tag {
+                    Name = song.AuthorName,
+                    ParentId = genreTag.Id,
+                    Popularity = 0
+                });
+            Tag songTag = _db.Tags.FirstOrDefault(t => t.Name == song.Name && t.ParentId == authorTag.Id);
+            if (songTag == null)
+                //we need to add another tag for this song name that is from author called AuthorName in specific genre of music
+                _db.Tags.Add(new Tag {
+                    Name = song.Name,
+                    ParentId = authorTag.Id,
+                    Popularity = 0
+                });
             _db.SaveChanges();
                 
             return new SongVM(createdSong);

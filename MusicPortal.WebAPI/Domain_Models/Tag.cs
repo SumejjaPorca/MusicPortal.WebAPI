@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicPortal.WebAPI.Domain_Models
 {
@@ -15,5 +16,9 @@ namespace MusicPortal.WebAPI.Domain_Models
         [DisplayName("TagName")]
         public String Name { get; set; }
         public virtual Collection<Song> Songs { get; set; }
+        public int ParentId { get; set; }
+        [ForeignKey("ParentId")]
+        public Tag ParentTag { get; set; }
+        public int Popularity { get; set; }
     }
 }

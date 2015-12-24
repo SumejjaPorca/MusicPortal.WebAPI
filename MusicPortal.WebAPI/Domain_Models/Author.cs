@@ -11,7 +11,7 @@ namespace MusicPortal.WebAPI.Domain_Models
     public class Author
     {
         [Key]
-        public string Id { get; set; }
+        public int Id { get; set; }
         [DisplayName("Name of the author")]
         public string Name { get; set; }
 

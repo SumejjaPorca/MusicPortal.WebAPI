@@ -102,7 +102,7 @@ namespace MusicPortal.WebAPI.Controllers
         [Route("")]
         [AllowAnonymous]
         [HttpPost]
-        public HttpResponseMessage CreateSong(SongVM song) {
+        public HttpResponseMessage CreateSong(NewSongVM song) {
             HttpResponseMessage responseMsg;
             try {
                 SongVM createdSong = _mngr.CreateSong(song);
