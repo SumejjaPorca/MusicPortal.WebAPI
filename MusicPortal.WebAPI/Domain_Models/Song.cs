@@ -17,5 +17,7 @@ namespace MusicPortal.WebAPI.Domain_Models
         public string Link { get; set; }
 
         public virtual Collection<Tag> Tags { get; set; }
+        public virtual Collection<Author> Authors { get; set; }
+        public virtual Collection<HeartedSong> Hearts { get; set; }
     }
 }

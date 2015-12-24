@@ -100,7 +100,7 @@ namespace MusicPortal.WebAPI.Controllers
 
         // POST api/Song
         [Route("")]
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost]
         public HttpResponseMessage CreateSong(NewSongVM song) {
             HttpResponseMessage responseMsg;
@@ -117,7 +117,7 @@ namespace MusicPortal.WebAPI.Controllers
 
         // PUT api/Song
         [Route("")]
-        [AllowAnonymous]
+        [Authorize]
         [HttpPut]
         public HttpResponseMessage UpdateSong(SongVM song) {
             HttpResponseMessage responseMsg;
@@ -134,7 +134,7 @@ namespace MusicPortal.WebAPI.Controllers
 
         // DELETE api/Song
         [Route("{songId}")]
-        [AllowAnonymous]
+        [Authorize]
         [HttpDelete]
         public HttpResponseMessage DeleteSong(long songId) {
             HttpResponseMessage responseMsg;

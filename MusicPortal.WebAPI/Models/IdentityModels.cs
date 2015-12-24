@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
+using MusicPortal.WebAPI.Domain_Models;
+using System.Collections.ObjectModel;
 
 namespace MusicPortal.WebAPI.Models
 {
@@ -16,6 +18,9 @@ namespace MusicPortal.WebAPI.Models
             // Add custom user claims here
             return userIdentity;
         }
+
+
+        public virtual Collection<HeartedSong> HeartedSongs { get; set; }
 
     }
 
