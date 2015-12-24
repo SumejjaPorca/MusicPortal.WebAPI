@@ -1,4 +1,5 @@
-﻿using MusicPortal.WebAPI.Data;
+﻿using MusicPortal.WebAPI.Binding_Models;
+using MusicPortal.WebAPI.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,12 @@ namespace MusicPortal.WebAPI.BL
 
         public AIManager() {
             _db = new MusicPortalDbContext();
+        }
+
+        public List<SongVM> GetFlow(string userId) {
+            //get preferred tags 
+            //extract songs from those tags
+            throw new NotImplementedException();
         }
 
     }

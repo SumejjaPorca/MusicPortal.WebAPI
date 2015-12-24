@@ -174,15 +174,23 @@ namespace MusicPortal.WebAPI.BL
             return songModelsByTagName;
         }
 
-        public SongVM UpdateSong(SongVM song) {
-            Song updatedSong = _db.Songs.Where(x => x.Id == song.Id).FirstOrDefault();
-
-            updatedSong.Name = song.Name;
-            updatedSong.Link = song.Link;
-
+        public void HeartSong(int songId, string userId) {
+            Song song = _db.Songs.Where(x => x.Id == songId).FirstOrDefault();
+            if (song == null)
+                throw new Exception("Song with provided ID does not exist in the database.");
+            HeartedSong heartedSong = _db.HeartedSongs.Where(x => x.Id == songId && x.UserId == userId).FirstOrDefault();
+            if (heartedSong == null)
+                _db.HeartedSongs.Add(new HeartedSong {
+                    IsHearted = true,
+                    SongId = songId,
+                    UserId = userId
+                });
+            else
+                heartedSong.IsHearted = !heartedSong.IsHearted;
+            //TODO: change tag popularities according to this! 
+            
             _db.SaveChanges();
 
-            return new SongVM(updatedSong);
         }
 
         public SongVM DeleteSong(long songId) {
@@ -194,6 +202,7 @@ namespace MusicPortal.WebAPI.BL
         }
 
         public void PlaySong(int songId, string userId) {
+            //TODO: scale popularities and/or use Gaussian 
             List<int> tagIds = _db.TagSongs.Where(t => t.SongId == songId).Select(t => t.Id).ToList();
             List<Tag> tags = _db.Tags.Where(t => tagIds.Contains(t.Id)).ToList();
             foreach (Tag t in tags) {
@@ -210,5 +219,6 @@ namespace MusicPortal.WebAPI.BL
             }
             _db.SaveChanges();
         }
+
     }
 }

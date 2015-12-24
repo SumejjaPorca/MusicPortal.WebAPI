@@ -104,6 +104,10 @@ namespace MusicPortal.WebAPI.Controllers
         [HttpPost]
         public HttpResponseMessage CreateSong(NewSongVM song) {
             HttpResponseMessage responseMsg;
+            if (!ModelState.IsValid)
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
             try {
                 SongVM createdSong = _mngr.CreateSong(song);
 
@@ -119,12 +123,18 @@ namespace MusicPortal.WebAPI.Controllers
         [Route("")]
         [Authorize]
         [HttpPut]
-        public HttpResponseMessage UpdateSong(SongVM song) {
+        public HttpResponseMessage HeartSong(SongVM song) {
             HttpResponseMessage responseMsg;
+            if (!ModelState.IsValid)
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
             try {
-                SongVM updatedSong = _mngr.UpdateSong(song);
+                string id = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
 
-                responseMsg = _helper.CreateCustomResponseMsg(new List<SongVM>() { updatedSong }, HttpStatusCode.OK);
+                _mngr.HeartSong(song.Id, id);
+                responseMsg = new HttpResponseMessage(HttpStatusCode.OK);
+
             } catch (Exception e) {
                 responseMsg = _helper.CreateErrorResponseMsg(new HttpError(e.Message), HttpStatusCode.InternalServerError);
             }
