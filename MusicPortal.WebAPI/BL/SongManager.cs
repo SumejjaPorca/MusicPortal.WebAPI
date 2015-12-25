@@ -36,6 +36,11 @@ namespace MusicPortal.WebAPI.BL
         }
 
         public SongVM CreateSong(NewSongVM song) {
+            //TODO: handle many authors separeted with coma case
+            //List<int> authorIds = _db.AuthorSongs.Where(authorsong => authorsong.SongId == songId).Select(author => author.AuthorId).ToList();
+            //List<String> authors = _db.Authors.Where(a => authorIds.Contains(a.Id)).Select(a => a.Name).ToList();
+            //Tag genre = tags.Where(t => t.Name != song.Name && !authors.Contains(t.Name)).FirstOrDefault();
+
             Author author = _db.Authors.FirstOrDefault(a => a.Name == song.AuthorName);
             if (author == null)
                 _db.Authors.Add(new Author
@@ -205,8 +210,13 @@ namespace MusicPortal.WebAPI.BL
             if (userId != null)
             {
                 //TODO: scale popularities and/or use Gaussian 
+                Song song = _db.Songs.Where(s => s.Id == songId).FirstOrDefault();
+                if (song == null)
+                    throw new Exception("Song with provided id does not exist in our database!");
+
                 List<int> tagIds = _db.TagSongs.Where(t => t.SongId == songId).Select(t => t.Id).ToList();
                 List<Tag> tags = _db.Tags.Where(t => tagIds.Contains(t.Id)).ToList();
+                              
                 foreach (Tag t in tags)
                 {
                     TagUser tagUser = _db.TagUsers.FirstOrDefault(tu => tu.TagId == t.Id && tu.UserId == userId);
@@ -214,11 +224,13 @@ namespace MusicPortal.WebAPI.BL
                         tagUser.Popularity = tagUser.Popularity + 1;
                     else
                         _db.TagUsers.Add(new TagUser
-                        {
-                            Popularity = 1,
-                            TagId = t.Id,
-                            UserId = userId
-                        });
+                            {
+                                Popularity = 1,
+                                TagId = t.Id,
+                                UserId = userId,
+                                ParentTagId = t.ParentId
+                            });
+                        
                     t.Popularity = t.Popularity + 1;
                 }
                 _db.SaveChanges();

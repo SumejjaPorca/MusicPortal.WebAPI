@@ -19,5 +19,8 @@ namespace MusicPortal.WebAPI.Domain_Models
         [ForeignKey("TagId")]
         public Tag Tag { get; set; }
         public int Popularity { get; set; }
+        public int ParentTagId { get; set; }
+        [ForeignKey("ParentTagId")]
+        public Tag ParentTag { get; set; }
     }
 }
