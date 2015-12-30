@@ -77,7 +77,10 @@ namespace MusicPortal.WebAPI.BL
             {
                 newSongs[newSong] *= 1.0 / (1.0 + authorSongs[newSong.ParentTag].Sum(kv => kv.Key.Popularity));
                 if (newSongs[newSong] >= authorSongs[newSong.ParentTag].Values.Max())
+                {
                     authorSongs[newSong.ParentTag].Add(newSong, newSongs[newSong]);
+                    realNeighborProbSongs.Add(newSong, newSongs[newSong]);
+                }
             }
 
             //get real user* neighbor probabilites for all author tags
@@ -98,7 +101,7 @@ namespace MusicPortal.WebAPI.BL
             //get new authors with higher global neighbor probabilities
             Dictionary<Tag, double> newAuthors = (
                          from t in _db.Tags
-                         where parentIds.Contains(t.ParentId)
+                         where genreIds.Contains(t.ParentId)
                          group t by t.ParentId
                              into tags
                              from t in _db.Tags
@@ -108,18 +111,57 @@ namespace MusicPortal.WebAPI.BL
             Dictionary<Tag, Dictionary<Tag, double>> authorTags = new Dictionary<Tag, Dictionary<Tag, double>>();
             foreach (KeyValuePair<Tag, double> author in realNeighborProbAuthors)
             {
-                authorSongs[author.Key.ParentTag].Add(author.Key, author.Value);
+                authorTags[author.Key.ParentTag].Add(author.Key, author.Value);
             }
 
             foreach (Tag newAuthor in newAuthors.Keys)
             {
-                newSongs[newAuthor] *= 1.0 / (1.0 + authorSongs[newAuthor.ParentTag].Sum(kv => kv.Key.Popularity));
-                if (newSongs[newAuthor] >= authorSongs[newAuthor.ParentTag].Values.Max())
-                    authorSongs[newAuthor.ParentTag].Add(newAuthor, newSongs[newAuthor]);
+                newAuthors[newAuthor] *= 1.0 / (1.0 + authorTags[newAuthor.ParentTag].Sum(kv => kv.Key.Popularity));
+                if (newAuthors[newAuthor] >= authorTags[newAuthor.ParentTag].Values.Max())
+                {
+                    authorTags[newAuthor.ParentTag].Add(newAuthor, newAuthors[newAuthor]);
+                    realNeighborProbAuthors.Add(newAuthor, newAuthors[newAuthor]);
+                }
             }
             
+            //getting real user probabilities for all tags
+            List<Tag> genres = userTags.Keys.Where(t => genreIds.Contains(t.Id)).ToList();
+
+            foreach(Tag t in genres){
+                userTags[t] *= userTags[t.ParentTag];
+            }
+
+            foreach (Tag t in realNeighborProbAuthors.Keys)
+            {
+                userTags[t] = realNeighborProbAuthors[t] * userTags[t.ParentTag];
+            }
+
+            foreach (Tag t in realNeighborProbSongs.Keys)
+            {
+                userTags[t] = realNeighborProbSongs[t] * userTags[t.ParentTag];
+            }
+
+            userTags = userTags.Take(_tagLimit).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
+            
             //TODO: extract songs from those tags
-            throw new NotImplementedException();
+
+            List<SongVM> _songs = (from st in _db.TagSongs
+                                   join t in _db.Tags on st.TagId equals t.Id
+                                   where userTags.Keys.Contains(t)
+                                   group t by st.SongId
+                                       into ts
+                                       from s in _db.Songs
+                                       where s.Id == ts.Key
+                                       orderby ts.Sum(t => userTags[t]) descending
+                                       select new SongVM
+                                       {
+                                           Id = s.Id,
+                                           Link = s.Link,
+                                           Name = s.Name
+                                       }).Take(_songLimit).ToList();
+
+            return _songs;
+
         }
 
         public void ReduceSubTree(string userId, int tagId) {
