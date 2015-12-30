@@ -18,6 +18,7 @@ namespace MusicPortal.WebAPI.Domain_Models
         public String Name { get; set; }
         public virtual Collection<Song> Songs { get; set; }
         public virtual Collection<ApplicationUser> Users { get; set; }
+        [Index("Parent", 1)]
         public int ParentId { get; set; }
         [ForeignKey("ParentId")]
         public Tag ParentTag { get; set; }
