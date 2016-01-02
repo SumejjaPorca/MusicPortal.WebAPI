@@ -6,6 +6,7 @@ using System.Web;
 using System.Threading.Tasks;
 using MusicPortal.WebAPI.Domain_Models;
 using System.Data.Entity;
+using System.Data.SqlClient;
 
 namespace MusicPortal.WebAPI.BL
 {
@@ -110,81 +111,17 @@ namespace MusicPortal.WebAPI.BL
         }
 
 		public List<HeartedSongVM> GetFuzzy(string songName){
-			// third param is the fuzzyness so change it in order to adjust
-			// 0 means crisp, 1 totally fuzzy
-            var songs = MakeHeartedSong(FuzzySearch(songName, _db.Songs.ToList(), 0.5).AsQueryable());
             
-            return songs.ToList();
+            //Levenshteina smo prebacili u bazu. Posto ne znam nacin da pozovem iz EF LINQ-a funkciju s baze ovo je najbolje rjesenje
+            var query = "SELECT[Id] FROM[dbo].[Songs] ORDER BY[dbo].[Levenshtein]([Name],  @q, 30) / CAST(LEN([Name]) AS decimal) OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY";
+            var best_ids = _db.Database.SqlQuery<long>(query, new SqlParameter("@q", songName)).ToList();
+            var best_songs = _db.Songs.Where(so => best_ids.Contains(so.Id));
+
+            return MakeHeartedSong(best_songs).ToList().OrderBy(so => best_ids.FindIndex(bo => bo == so.SongId)).ToList();
         }
 
-		private List<Domain_Models.Song> FuzzySearch(
-			string word,
-			List<Song> songList,
-			double fuzzyness)
-		{
-			List<Domain_Models.Song> foundSongs = new List<Domain_Models.Song>();
+		
 
-			foreach (Domain_Models.Song song in songList)
-			{
-				string s = song.Name;
-				// Calculate the Levenshtein-distance:
-				int levenshteinDistance =
-				    LevenshteinDistance(word, s);
-
-				// Length of the longer string:
-				int length = Math.Max(word.Length, s.Length);
-
-				// Calculate the score:
-				double score = 1.0 - (double)levenshteinDistance / length;
-
-				// Match?
-				if (score > fuzzyness)
-				    foundSongs.Add(song);
-			}
-			return foundSongs;
-		}
-
-		private  static int LevenshteinDistance(string src, string dest) {
-			int[,] d = new int[src.Length + 1, dest.Length + 1];
-			int i, j, cost;
-			char[] str1 = src.ToCharArray();
-			char[] str2 = dest.ToCharArray();
-
-			for (i = 0; i <= str1.Length; i++)
-			{
-				d[i, 0] = i;
-			}
-			for (j = 0; j <= str2.Length; j++)
-			{
-				d[0, j] = j;
-			}
-			for (i = 1; i <= str1.Length; i++)
-			{
-				for (j = 1; j <= str2.Length; j++)
-				{
-
-				    if (str1[i - 1] == str2[j - 1])
-				        cost = 0;
-				    else
-				        cost = 1;
-
-				    d[i, j] =
-				        Math.Min(
-				            d[i - 1, j] + 1,              // Deletion
-				            Math.Min(
-				                d[i, j - 1] + 1,          // Insertion
-				                d[i - 1, j - 1] + cost)); // Substitution
-
-				    if ((i > 1) && (j > 1) && (str1[i - 1] == 
-				        str2[j - 2]) && (str1[i - 2] == str2[j - 1]))
-				    {
-				        d[i, j] = Math.Min(d[i, j], d[i - 2, j - 2] + cost);
-				    }
-				}
-			}
-
-			return d[str1.Length, str2.Length];
-		}
 
         public List<SongVM> GetByTagName(string tagName) {
             List<SongVM> songModelsByTagName =

@@ -145,10 +145,10 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
-        // PUT api/Song/{id}/heart
+        // POST api/Song/{id}/heart
         [Route("{id}/heart")]
         [Authorize]
-        [HttpPut]
+        [HttpPost]
         public HttpResponseMessage HeartSong(long id) {
             HttpResponseMessage responseMsg;
             
