@@ -18,6 +18,30 @@ namespace MusicPortal.WebAPI.BL
             this._db = db;
         }
 
+        public IQueryable<HeartedSongVM> MakeHeartedSong(IQueryable<Song> songs)
+        {
+
+            var songs_author = (from song in songs
+                                join sa in _db.AuthorSongs on song.Id equals sa.SongId
+                                join authors in _db.Authors on sa.AuthorId equals authors.Id
+                                group authors by song into row
+                                select new { Song = row.Key, Authors = row.Select(a => a.Name).ToList() });
+            var luka = songs_author.ToList();
+            //TODO
+            return songs_author.Select(sa => new HeartedSongVM
+            {
+                SongId = sa.Song.Id,
+                Name = sa.Song.Name,
+                Link = sa.Song.Link,
+                IsHearted = false, //TODO
+                Authors = sa.Authors
+
+            });
+                     
+            
+
+        }
+
         public Task<List<SongVM> > GetAllAsync() {
             return Task.Run(() =>
             {
@@ -85,17 +109,12 @@ namespace MusicPortal.WebAPI.BL
             return new SongVM(createdSong);
         }
 
-		public List<SongVM> GetFuzzy(string songName){
+		public List<HeartedSongVM> GetFuzzy(string songName){
 			// third param is the fuzzyness so change it in order to adjust
 			// 0 means crisp, 1 totally fuzzy
-            List<Song> songs = FuzzySearch(songName, _db.Songs.ToList(), 0.5);
-
-            List<SongVM> songModels = new List<SongVM>();
-            foreach (var song in songs) {
-                songModels.Add(new SongVM(song));
-            }
-
-            return songModels;
+            var songs = MakeHeartedSong(FuzzySearch(songName, _db.Songs.ToList(), 0.5).AsQueryable());
+            
+            return songs.ToList();
         }
 
 		private List<Domain_Models.Song> FuzzySearch(

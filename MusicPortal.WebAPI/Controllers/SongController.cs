@@ -20,11 +20,15 @@ namespace MusicPortal.WebAPI.Controllers
         private MusicPortalDbContext _db;
         private SongManager _mngr;
         private HttpResponseHelper<SongVM> _helper;
+
+        //heart_helper ... he-he :P
+        private HttpResponseHelper<HeartedSongVM> _heartpler;
         public SongController()
         {
             _db = new MusicPortalDbContext();
             _mngr = new SongManager(_db);
             _helper = new HttpResponseHelper<SongVM>(this);
+            _heartpler = new HttpResponseHelper<HeartedSongVM>(this);
         }
 
         // GET api/Song
@@ -64,25 +68,25 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
-        // GET api/Song
-        [Route("")]
+        // GET api/Song/search?query=Apokalipso
+        [Route("search")]
         [AllowAnonymous]
         [HttpGet]
-        public HttpResponseMessage SearchByQuery(string searchQuery) {
+        public HttpResponseMessage SearchByQuery(string query) {
             HttpResponseMessage responseMsg;
             try {
-                List<SongVM> songs = _mngr.GetFuzzy(searchQuery);
-
-                responseMsg = _helper.CreateCustomResponseMsg(songs, HttpStatusCode.OK);
+                List<HeartedSongVM> songs = _mngr.GetFuzzy(query);
+                
+                responseMsg = _heartpler.CreateCustomResponseMsg(songs, HttpStatusCode.OK);
             } catch (Exception e) {
-                responseMsg = _helper.CreateErrorResponseMsg(new HttpError(e.Message), HttpStatusCode.BadRequest);
+                responseMsg = _heartpler.CreateErrorResponseMsg(new HttpError(e.Message), HttpStatusCode.BadRequest);
             }
 
             return responseMsg;
         }
 
-        // GET api/Song
-        [Route("")]
+        // GET api/Song/search?tagName=rock
+        [Route("search")]
         [AllowAnonymous]
         [HttpGet]
         public HttpResponseMessage SearchByTagName(string tagName) {
@@ -141,20 +145,22 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
-        // PUT api/Song
-        [Route("")]
+        // PUT api/Song/{id}/heart
+        [Route("{id}/heart")]
         [Authorize]
         [HttpPut]
-        public HttpResponseMessage HeartSong(SongVM song) {
+        public HttpResponseMessage HeartSong(long id) {
             HttpResponseMessage responseMsg;
-            if (!ModelState.IsValid)
+            
+
+            if (_db.Songs.FirstOrDefault(s => s.Id == id) == null) //song doesn't exist
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
             try {
-                string id = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
-
-                _mngr.HeartSong(song.Id, id);
+                string user_id = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
+                
+                _mngr.HeartSong(id, user_id);
                 responseMsg = new HttpResponseMessage(HttpStatusCode.OK);
 
             } catch (Exception e) {
