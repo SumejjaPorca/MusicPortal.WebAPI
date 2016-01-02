@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Threading.Tasks;
 using MusicPortal.WebAPI.Domain_Models;
+using System.Data.Entity;
 
 namespace MusicPortal.WebAPI.BL
 {
@@ -167,19 +168,15 @@ namespace MusicPortal.WebAPI.BL
 		}
 
         public List<SongVM> GetByTagName(string tagName) {
-            List<Song> songsByTagName = 
-                _db.Songs.Include("Tags")
-                .Where(x => x.Tags.Where(y => y.Name == tagName).Count() >= 1).ToList();
+            List<SongVM> songModelsByTagName =
+                _db.Songs.Include(song => song.Tags)
+                //TODO prepravljao ovo... moguce da ce pasti jer nije includan Tags.Song
+                .Where(x => x.Tags.Where(y => y.Song.Name == tagName).Count() >= 1).Select<Song, SongVM>(x => new SongVM(x)).ToList();
             
-            List<SongVM> songModelsByTagName = new List<SongVM>();
-            foreach (var song in songsByTagName) {
-                songModelsByTagName.Add(new SongVM(song));
-            }
-
             return songModelsByTagName;
         }
 
-        public void HeartSong(int songId, string userId) {
+        public void HeartSong(long songId, string userId) {
             Song song = _db.Songs.Where(x => x.Id == songId).FirstOrDefault();
             if (song == null)
                 throw new Exception("Song with provided ID does not exist in the database.");
@@ -214,7 +211,7 @@ namespace MusicPortal.WebAPI.BL
                 if (song == null)
                     throw new Exception("Song with provided id does not exist in our database!");
 
-                List<int> tagIds = _db.TagSongs.Where(t => t.SongId == songId).Select(t => t.Id).ToList();
+                List<long> tagIds = _db.TagSongs.Where(t => t.SongId == songId).Select(t => t.Id).ToList();
                 List<Tag> tags = _db.Tags.Where(t => tagIds.Contains(t.Id)).ToList();
                               
                 foreach (Tag t in tags)

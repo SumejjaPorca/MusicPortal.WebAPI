@@ -11,11 +11,11 @@ namespace MusicPortal.WebAPI.Domain_Models
     public class Author
     {
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
         [DisplayName("Name of the author")]
         public string Name { get; set; }
 
-        public virtual Collection<Song> Songs { get; set; }
+        public virtual Collection<AuthorSong> Songs { get; set; }
 
     }
 }

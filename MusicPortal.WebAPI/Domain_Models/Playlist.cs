@@ -4,12 +4,15 @@ using System.Linq;
 using System.Web;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace MusicPortal.WebAPI.Domain_Models
 {
     public class Playlist
     {
-        public int Id { get; set; }
-        public virtual Collection<Song> Songs { get; set; }
+        [Key]
+        public long Id { get; set; }
+        public string Title { get; set; }
+        public virtual Collection<PlaylistSong> Songs { get; set; }
     }
 }

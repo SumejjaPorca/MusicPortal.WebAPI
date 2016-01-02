@@ -11,13 +11,16 @@ namespace MusicPortal.WebAPI.Domain_Models
     public class HeartedSong
     {
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
+
         public string UserId { get; set; }
         [ForeignKey("UserId")]
-        public ApplicationUser User { get; set; }
-        public int SongId { get; set; }
+        public virtual ApplicationUser User { get; set; }
+
+        public long SongId { get; set; }
         [ForeignKey("SongId")]
-        public Song Song { get; set; }
+        public virtual Song Song { get; set; }
+
         public bool IsHearted { get; set; }
     }
 }

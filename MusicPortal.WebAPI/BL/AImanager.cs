@@ -36,15 +36,15 @@ namespace MusicPortal.WebAPI.BL
                          select new KeyValuePair<Tag, double>(t, t.Popularity / (1 + tags.Sum(tag => tag.Popularity)))).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
 
             //get songs
-            List<int> parentIds = userTags.Keys.Select(t => t.ParentId).Distinct().ToList();
+            List<long> parentIds = userTags.Keys.Select(t => t.ParentId).Distinct().ToList();
             List<Tag> songs = userTags.Keys.Where(t => !parentIds.Contains(t.Id)).ToList();
-            List<int> songIds = songs.Select(s => s.Id).ToList();
+            List<long> songIds = songs.Select(s => s.Id).ToList();
 
             //get all author tag ids
             parentIds = songs.Select(t => t.ParentId).Distinct().ToList();
             
             //get all subgenre tag ids
-            List<int> genreIds = userTags.Keys.Where(t => parentIds.Contains(t.Id)).Select(t => t.ParentId).ToList();
+            List<long> genreIds = userTags.Keys.Where(t => parentIds.Contains(t.Id)).Select(t => t.ParentId).ToList();
 
             //get real user* neighbor probabilites for all songs
             Dictionary<Tag, double> realNeighborProbSongs = (from t in _db.Tags
@@ -164,9 +164,9 @@ namespace MusicPortal.WebAPI.BL
 
         }
 
-        public void ReduceSubTree(string userId, int tagId) {
+        public void ReduceSubTree(string userId, long tagId) {
 
-            int id = (from t in _db.TagUsers where t.Id == tagId && t.UserId == userId select t.ParentTagId).FirstOrDefault();
+            long id = (from t in _db.TagUsers where t.Id == tagId && t.UserId == userId select t.ParentTagId).FirstOrDefault();
             List<TagUser> tags = (from tu in _db.TagUsers
                         where tu.UserId == userId && tu.ParentTagId == id
                         select new TagUser{

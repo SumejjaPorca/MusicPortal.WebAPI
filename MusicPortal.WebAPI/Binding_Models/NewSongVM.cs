@@ -10,7 +10,7 @@ namespace MusicPortal.WebAPI.Binding_Models
         public string Name { get; set; }
 
         public string Link { get; set; }
-        public int GenreTagId { get; set; }
+        public long GenreTagId { get; set; }
         public string AuthorName { get; set; }
     }
 }

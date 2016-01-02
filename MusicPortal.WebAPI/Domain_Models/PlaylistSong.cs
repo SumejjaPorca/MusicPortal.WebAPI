@@ -10,14 +10,14 @@ namespace MusicPortal.WebAPI.Domain_Models
     public class PlaylistSong
     {
         [Key]
-        public int Id { get; set; }
-        public int PlaylistId { get; set; }
+        public long Id { get; set; }
 
+        public long PlaylistId { get; set; }
         [ForeignKey("PlaylistId")]
-        public Playlist Playlist { get; set; }
-        public int SongId { get; set; }
+        public virtual Playlist Playlist { get; set; }
 
+        public long SongId { get; set; }
         [ForeignKey("SongId")]
-        public Song Song { get; set; }
+        public virtual Song Song { get; set; }
     }
 }

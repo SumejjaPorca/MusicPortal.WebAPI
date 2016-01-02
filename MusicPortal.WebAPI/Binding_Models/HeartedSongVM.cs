@@ -8,7 +8,7 @@ namespace MusicPortal.WebAPI.Binding_Models
     public class HeartedSongVM
     {
         public string UserId { get; set; }
-        public int SongId { get; set; }
+        public long SongId { get; set; }
         public string Name { get; set; }
         public bool IsHearted { get; set; }      
         public string Link { get; set; }

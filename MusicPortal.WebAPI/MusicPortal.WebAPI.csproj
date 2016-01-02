@@ -236,6 +236,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601021448280_luka.cs" />
+    <Compile Include="Migrations\201601021448280_luka.Designer.cs">
+      <DependentUpon>201601021448280_luka.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -288,6 +292,11 @@
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
     <None Include="Properties\PublishProfiles\bezze.pubxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201601021448280_luka.resx">
+      <DependentUpon>201601021448280_luka.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

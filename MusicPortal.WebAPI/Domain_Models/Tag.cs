@@ -13,15 +13,18 @@ namespace MusicPortal.WebAPI.Domain_Models
     public class Tag
     {
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
         [DisplayName("TagName")]
         public String Name { get; set; }
-        public virtual Collection<Song> Songs { get; set; }
-        public virtual Collection<ApplicationUser> Users { get; set; }
+
+        public virtual Collection<TagSong> Songs { get; set; }
+        public virtual Collection<TagUser> Users { get; set; }
+
         [Index("Parent", 1)]
-        public int ParentId { get; set; }
+        public long ParentId { get; set; }
         [ForeignKey("ParentId")]
-        public Tag ParentTag { get; set; }
+        public virtual Tag ParentTag { get; set; }
+
         public int Popularity { get; set; }
     }
 }
