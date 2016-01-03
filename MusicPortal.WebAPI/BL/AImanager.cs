@@ -31,12 +31,12 @@ namespace MusicPortal.WebAPI.BL
                          where tu.UserId == userId
                          group tu by tu.ParentTagId into tags
                          from t in _db.Tags
-                         join parent in _db.Tags on t.ParentId equals parent.Id
+                         join parent in _db.Tags on t.ParentId.Value equals parent.Id
                          where t.ParentId == tags.Key
                          select new KeyValuePair<Tag, double>(t, t.Popularity / (1 + tags.Sum(tag => tag.Popularity)))).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
 
             //get songs
-            List<long> parentIds = userTags.Keys.Select(t => t.ParentId).Distinct().ToList();
+            List<long?> parentIds = userTags.Keys.Select(t => t.ParentId).Distinct().ToList();
             List<Tag> songs = userTags.Keys.Where(t => !parentIds.Contains(t.Id)).ToList();
             List<long> songIds = songs.Select(s => s.Id).ToList();
 
@@ -44,7 +44,7 @@ namespace MusicPortal.WebAPI.BL
             parentIds = songs.Select(t => t.ParentId).Distinct().ToList();
             
             //get all subgenre tag ids
-            List<long> genreIds = userTags.Keys.Where(t => parentIds.Contains(t.Id)).Select(t => t.ParentId).ToList();
+            List<long> genreIds = userTags.Keys.Where(t => parentIds.Contains(t.Id)).Select(t => t.ParentId.Value).ToList();
 
             //get real user* neighbor probabilites for all songs
             Dictionary<Tag, double> realNeighborProbSongs = (from t in _db.Tags
@@ -101,7 +101,7 @@ namespace MusicPortal.WebAPI.BL
             //get new authors with higher global neighbor probabilities
             Dictionary<Tag, double> newAuthors = (
                          from t in _db.Tags
-                         where genreIds.Contains(t.ParentId)
+                         where genreIds.Contains(t.ParentId.Value)
                          group t by t.ParentId
                              into tags
                              from t in _db.Tags

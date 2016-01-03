@@ -98,7 +98,7 @@ namespace MusicPortal.WebAPI.BL
             Tag authorTag = _db.Tags.FirstOrDefault(t => t.Name == song.AuthorName && t.ParentId == genreTag.Id);
             if (authorTag == null)
                 //we need to add another tag for this author for this genre for better search results
-                _db.Tags.Add(new Tag {
+                authorTag = _db.Tags.Add(new Tag {
                     Name = song.AuthorName,
                     ParentId = genreTag.Id,
                     Popularity = 0
@@ -108,7 +108,7 @@ namespace MusicPortal.WebAPI.BL
                 //we need to add another tag for this song name that is from author called AuthorName in specific genre of music
                 _db.Tags.Add(new Tag {
                     Name = song.Name,
-                    ParentId = authorTag.Id,
+                    ParentTag = authorTag,
                     Popularity = 0
                 });
             _db.SaveChanges();
@@ -187,7 +187,7 @@ namespace MusicPortal.WebAPI.BL
                                 Popularity = 1,
                                 TagId = t.Id,
                                 UserId = userId,
-                                ParentTagId = t.ParentId
+                                ParentTagId = t.ParentId.Value
                             });
                         
                     t.Popularity = t.Popularity + 1;
