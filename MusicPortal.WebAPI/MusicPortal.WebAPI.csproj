@@ -40,6 +40,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -131,12 +139,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.1.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -214,7 +216,11 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Binding_Models\AuthorVM.cs" />
     <Compile Include="Binding_Models\HeartedSongVM.cs" />
+    <Compile Include="Binding_Models\NewPlaylistVM.cs" />
     <Compile Include="Binding_Models\NewSongVM.cs" />
+    <Compile Include="Binding_Models\PlaylistAddSongVM.cs" />
+    <Compile Include="Binding_Models\PlaylistShortVM.cs" />
+    <Compile Include="Binding_Models\PlaylistVM.cs" />
     <Compile Include="Binding_Models\SongVM.cs" />
     <Compile Include="Binding_Models\UserVM.cs" />
     <Compile Include="BL\AIManager.cs" />
@@ -222,6 +228,7 @@
     <Compile Include="BL\SongManager.cs" />
     <Compile Include="BL\UserManager.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\PlaylistsController.cs" />
     <Compile Include="Controllers\SongController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -241,6 +248,10 @@
     <Compile Include="Migrations\201601030224311_luka3.cs" />
     <Compile Include="Migrations\201601030224311_luka3.Designer.cs">
       <DependentUpon>201601030224311_luka3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601031509065_playlist_owner.cs" />
+    <Compile Include="Migrations\201601031509065_playlist_owner.Designer.cs">
+      <DependentUpon>201601031509065_playlist_owner.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -291,13 +302,18 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Project_Readme.html" />
     <None Include="Properties\PublishProfiles\bezze.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201601030224311_luka3.resx">
       <DependentUpon>201601030224311_luka3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601031509065_playlist_owner.resx">
+      <DependentUpon>201601031509065_playlist_owner.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
