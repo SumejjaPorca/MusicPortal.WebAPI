@@ -18,16 +18,16 @@ namespace MusicPortal.WebAPI.Data {
         public DbSet<Playlist> Playlists { get; set; }
         public DbSet<PlaylistSong> PlaylistSongs { get; set; }
         public DbSet<AuthorSong> AuthorSongs { get; set; }
+        public DbSet<TagUser> TagUsers { get; set; }
 
         public MusicPortalDbContext() : base("DefaultConnection", throwIfV1Schema: false) {
             
         }
-
+       
         public static MusicPortalDbContext Create() {
             return new MusicPortalDbContext();
         }
 
-        public DbSet<TagUser> TagUsers { get; set; }
     }
 
 }

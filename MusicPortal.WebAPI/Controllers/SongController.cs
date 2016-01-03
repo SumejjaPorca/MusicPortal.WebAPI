@@ -70,12 +70,14 @@ namespace MusicPortal.WebAPI.Controllers
 
         // GET api/Song/search?query=Apokalipso
         [Route("search")]
-        [AllowAnonymous]
+        [Authorize]
         [HttpGet]
         public HttpResponseMessage SearchByQuery(string query) {
             HttpResponseMessage responseMsg;
             try {
-                List<HeartedSongVM> songs = _mngr.GetFuzzy(query);
+
+                string userId = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
+                List<HeartedSongVM> songs = _mngr.GetFuzzy(query, userId);
                 
                 responseMsg = _heartpler.CreateCustomResponseMsg(songs, HttpStatusCode.OK);
             } catch (Exception e) {
@@ -145,10 +147,10 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
-        // PUT api/Song/{id}/heart
+        // POST api/Song/heart
         [Route("{id}/heart")]
         [Authorize]
-        [HttpPut]
+        [HttpPost]
         public HttpResponseMessage HeartSong(long id) {
             HttpResponseMessage responseMsg;
             
