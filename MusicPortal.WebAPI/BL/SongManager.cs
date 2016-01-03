@@ -19,28 +19,34 @@ namespace MusicPortal.WebAPI.BL
             this._db = db;
         }
 
-        public IQueryable<HeartedSongVM> MakeHeartedSong(IQueryable<Song> songs)
+        public IQueryable<HeartedSongVM> MakeHeartedSong(IQueryable<Song> songs, string user_id)
         {
 
+            var aaa = songs.ToList();
             var songs_author = (from song in songs
                                 join sa in _db.AuthorSongs on song.Id equals sa.SongId
                                 join authors in _db.Authors on sa.AuthorId equals authors.Id
                                 group authors by song into row
-                                select new { Song = row.Key, Authors = row.Select(a => a.Name).ToList() });
-            var luka = songs_author.ToList();
-            //TODO
-            return songs_author.Select(sa => new HeartedSongVM
-            {
-                SongId = sa.Song.Id,
-                Name = sa.Song.Name,
-                Link = sa.Song.Link,
-                IsHearted = false, //TODO
-                Authors = sa.Authors
+                                select new { Song = row.Key, Authors = row.Select(a => new AuthorVM { Id = a.Id, Name = a.Name }) });
 
-            });
-                     
-            
 
+            var s2 = from song in songs
+                     join sa in _db.AuthorSongs on song.Id equals sa.SongId
+                     join authors in _db.Authors on sa.AuthorId equals authors.Id into auths
+                     join hs in _db.HeartedSongs on song.Id equals hs.SongId into hs
+                     from hearted in hs.DefaultIfEmpty()
+                     where hearted.UserId.Equals(user_id) || hearted == null
+                     select new HeartedSongVM
+                     {
+                         SongId = song.Id,
+                         Name = song.Name,
+                         Link = song.Link,
+                         IsHearted = hearted == null ? false : hearted.IsHearted,
+                         Authors = auths.Select(a => new AuthorVM { Id = a.Id, Name = a.Name})
+                     };
+           
+            var a4 = s2.ToList();
+            return s2;
         }
 
         public Task<List<SongVM> > GetAllAsync() {
@@ -110,14 +116,14 @@ namespace MusicPortal.WebAPI.BL
             return new SongVM(createdSong);
         }
 
-		public List<HeartedSongVM> GetFuzzy(string songName){
+		public List<HeartedSongVM> GetFuzzy(string songName, string user_id){
             
             //Levenshteina smo prebacili u bazu. Posto ne znam nacin da pozovem iz EF LINQ-a funkciju s baze ovo je najbolje rjesenje
             var query = "SELECT[Id] FROM[dbo].[Songs] ORDER BY[dbo].[Levenshtein]([Name],  @q, 30) / CAST(LEN([Name]) AS decimal) OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY";
             var best_ids = _db.Database.SqlQuery<long>(query, new SqlParameter("@q", songName)).ToList();
             var best_songs = _db.Songs.Where(so => best_ids.Contains(so.Id));
 
-            return MakeHeartedSong(best_songs).ToList().OrderBy(so => best_ids.FindIndex(bo => bo == so.SongId)).ToList();
+            return MakeHeartedSong(best_songs, user_id).ToList().OrderBy(so => best_ids.FindIndex(bo => bo == so.SongId)).ToList();
         }
 
 		
