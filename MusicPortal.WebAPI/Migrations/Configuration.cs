@@ -10,6 +10,73 @@ namespace MusicPortal.WebAPI.Migrations
 
     internal sealed class Configuration : DbMigrationsConfiguration<MusicPortal.WebAPI.Data.MusicPortalDbContext>
     {
+        private static Tag alternative = new Tag
+        {
+            Name = "Alternative",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag blues = new Tag
+        {
+            Name = "Blues",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag classic = new Tag
+        {
+            Name = "Classic",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag country = new Tag
+        {
+            Name = "Country",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag electronic = new Tag
+        {
+            Name = "Electronic",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag rap = new Tag
+        {
+            Name = "Hip-Hop/Rap",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag indie = new Tag
+        {
+            Name = "Indie-Pop",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag pop = new Tag
+        {
+            Name = "Pop",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag jazz = new Tag
+        {
+            Name = "Jazz",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag reggae = new Tag
+        {
+            Name = "Reggae",
+            ParentId = null,
+            Popularity = 0
+        };
+        private static Tag rock = new Tag
+        {
+            Name = "Rock",
+            ParentId = null,
+            Popularity = 0
+        };
+
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
@@ -30,77 +97,16 @@ namespace MusicPortal.WebAPI.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+            seed_genres(context);
             seed_ekv(context);
             seed_rundek(context);
-            seed_genres(context);
             //TODO seed_rundek ^^
             //Makedo: https://api.soundcloud.com/tracks/97731606/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea
         }
 
         private void seed_genres(MusicPortalDbContext context)
         {
-            Tag alternative = new Tag
-            {
-                Name = "Alternative",
-                ParentId = null,
-                Popularity = 0
-            };
-            Tag blues = new Tag
-            {
-                Name = "Blues",
-                ParentId = null,
-                Popularity = 0
-            };
-            Tag classic = new Tag
-            {
-                Name = "Classic",
-                ParentId = null,
-                Popularity = 0
-            };
-            Tag country = new Tag
-            {
-                Name = "Country",
-                ParentId = null,
-                Popularity = 0
-            };
-            Tag electronic = new Tag
-            {
-                Name = "Electronic",
-                ParentId = null,
-                Popularity = 0
-            };
-            Tag rap = new Tag {
-                Name = "Hip-Hop/Rap",
-                ParentId = null,
-                Popularity = 0                 
-            };
-            Tag indie = new Tag {
-                Name = "Indie-Pop",
-                ParentId = null,
-                Popularity = 0                 
-            };
-            Tag pop =  new Tag {
-                Name = "Pop",
-                ParentId = null,
-                Popularity = 0                 
-            };
-            Tag jazz = new Tag {
-                Name = "Jazz",
-                ParentId = null,
-                Popularity = 0                 
-            };
-            Tag reggae = new Tag {
-                Name = "Reggae",
-                ParentId = null,
-                Popularity = 0                 
-            };
-            Tag rock = new Tag
-            {
-                Name = "Rock",
-                ParentId = null,
-                Popularity = 0
-            };
-
+           
             context.Tags.AddOrUpdate(t => t.Name, alternative);
             context.Tags.AddOrUpdate(t => t.Name, blues);
             context.Tags.AddOrUpdate(t => t.Name, classic);
@@ -118,11 +124,6 @@ namespace MusicPortal.WebAPI.Migrations
                 Name = "Art Punk",
                 ParentTag = alternative,
                 Popularity = 0 
-            },
-                new Tag {
-                Name = "Hard Rock",
-                ParentTag = alternative,
-                Popularity = 0                 
             },
                 new Tag {
                 Name = "Indie Rock",
@@ -200,14 +201,6 @@ namespace MusicPortal.WebAPI.Migrations
                 Name = "Metal",
                 ParentTag = rock,
                 Popularity = 0                 
-            }, new Tag {
-                Name = "Psychedelic",
-                ParentTag = rock,
-                Popularity = 0                 
-            }, new Tag {
-                Name = "Art Rock",
-                ParentTag = rock,
-                Popularity = 0                 
             }};
 
              foreach (var tag in tags)
@@ -225,6 +218,41 @@ namespace MusicPortal.WebAPI.Migrations
                 a => a.Name, ekv
             );
 
+            Tag subgenre1 = new Tag {
+                Name = "Psychedelic",
+                ParentTag = rock,
+                Popularity = 0                 
+            };
+            Tag subgenre2 = new Tag {
+                Name = "Art Rock",
+                ParentTag = rock,
+                Popularity = 0                 
+            };
+            Tag subgenre3 = new Tag
+            {
+                Name = "EKV - Ekatarina velika",
+                ParentTag = subgenre1,
+                Popularity = 0
+            };
+            Tag subgenre4 = new Tag
+            {
+                Name = "EKV - Ekatarina velika",
+                ParentTag = subgenre2,
+                Popularity = 0
+            };
+           
+            context.Tags.AddOrUpdate(
+                t => t.Name, subgenre1
+            );
+            context.Tags.AddOrUpdate(
+                t => t.Name, subgenre2
+            );
+            context.Tags.AddOrUpdate(
+                t => t.Name, subgenre3
+            );
+            context.Tags.AddOrUpdate(
+                t => t.Name, subgenre4
+            );
            
             var songs = new List<Song> {
                 new Song
@@ -275,6 +303,34 @@ namespace MusicPortal.WebAPI.Migrations
             {
                 context.Songs.AddOrUpdate(s => s.Link, song);
                 context.AuthorSongs.AddOrUpdate(new AuthorSong { Author = ekv, Song = song });
+                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = rock });
+                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre1 });
+                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre2 });
+                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre3 });
+                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre4 });
+
+                Tag subgenre5 = new Tag
+                {
+                    Name = song.Name,
+                    ParentTag = subgenre3,
+                    Popularity = 0
+                };
+                Tag subgenre6 = new Tag
+                {
+                    Name = song.Name,
+                    ParentTag = subgenre4,
+                    Popularity = 0
+                };
+                context.Tags.AddOrUpdate(
+                t => t.Name, subgenre5
+                ); 
+                context.Tags.AddOrUpdate(
+                 t => t.Name, subgenre6
+                );
+
+                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre5 });
+                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre6 });
+
             }
         }
 

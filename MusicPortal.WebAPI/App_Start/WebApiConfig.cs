@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Web.Http;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
+using System.Web.Http.Routing;
+using System.Web.Http.Cors;
 
 namespace MusicPortal.WebAPI
 {
@@ -24,6 +26,11 @@ namespace MusicPortal.WebAPI
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
+            );
+            config.Routes.MapHttpRoute(
+                name: "HeartedSong",
+                routeTemplate: "api/Song/{id}/heart"
+                //constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
             );
         }
     }
