@@ -22,14 +22,6 @@ namespace MusicPortal.WebAPI.BL
         public IQueryable<HeartedSongVM> MakeHeartedSong(IQueryable<Song> songs, string user_id)
         {
 
-            var aaa = songs.ToList();
-            var songs_author = (from song in songs
-                                join sa in _db.AuthorSongs on song.Id equals sa.SongId
-                                join authors in _db.Authors on sa.AuthorId equals authors.Id
-                                group authors by song into row
-                                select new { Song = row.Key, Authors = row.Select(a => new AuthorVM { Id = a.Id, Name = a.Name }) });
-
-
             var s2 = from song in songs
                      join sa in _db.AuthorSongs on song.Id equals sa.SongId
                      join authors in _db.Authors on sa.AuthorId equals authors.Id into auths
@@ -44,8 +36,7 @@ namespace MusicPortal.WebAPI.BL
                          IsHearted = hearted == null ? false : hearted.IsHearted,
                          Authors = auths.Select(a => new AuthorVM { Id = a.Id, Name = a.Name})
                      };
-           
-            var a4 = s2.ToList();
+          
             return s2;
         }
 
@@ -142,7 +133,7 @@ namespace MusicPortal.WebAPI.BL
             Song song = _db.Songs.Where(x => x.Id == songId).FirstOrDefault();
             if (song == null)
                 throw new Exception("Song with provided ID does not exist in the database.");
-            HeartedSong heartedSong = _db.HeartedSongs.Where(x => x.Id == songId && x.UserId == userId).FirstOrDefault();
+            HeartedSong heartedSong = _db.HeartedSongs.Where(x => x.SongId == songId && x.UserId == userId).FirstOrDefault();
             if (heartedSong == null)
                 _db.HeartedSongs.Add(new HeartedSong {
                     IsHearted = true,
@@ -155,6 +146,15 @@ namespace MusicPortal.WebAPI.BL
             
             _db.SaveChanges();
 
+        }
+        public void UnHeartSong(long songId, string userId)
+        {
+            HeartedSong song = _db.HeartedSongs.Where(hs => hs.SongId == songId && hs.UserId.Equals(userId)).FirstOrDefault();
+            if (song == null)
+                throw new Exception("There is no hearted song for this user");
+            song.IsHearted = false;
+
+            _db.SaveChanges();
         }
 
         public SongVM DeleteSong(long songId) {
