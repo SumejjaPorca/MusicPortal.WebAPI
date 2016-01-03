@@ -236,9 +236,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201601021448280_luka.cs" />
-    <Compile Include="Migrations\201601021448280_luka.Designer.cs">
-      <DependentUpon>201601021448280_luka.cs</DependentUpon>
+    <Compile Include="Migrations\201601030058497_sumejja.cs" />
+    <Compile Include="Migrations\201601030058497_sumejja.Designer.cs">
+      <DependentUpon>201601030058497_sumejja.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -294,8 +294,8 @@
     <None Include="Properties\PublishProfiles\bezze.pubxml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201601021448280_luka.resx">
-      <DependentUpon>201601021448280_luka.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201601030058497_sumejja.resx">
+      <DependentUpon>201601030058497_sumejja.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

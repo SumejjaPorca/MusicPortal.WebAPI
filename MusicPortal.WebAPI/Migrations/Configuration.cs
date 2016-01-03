@@ -31,8 +31,189 @@ namespace MusicPortal.WebAPI.Migrations
             //
             seed_ekv(context);
             seed_rundek(context);
+            seed_genres(context);
             //TODO seed_rundek ^^
             //Makedo: https://api.soundcloud.com/tracks/97731606/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea
+        }
+
+        private void seed_genres(MusicPortalDbContext context)
+        {
+            Tag alternative = new Tag
+            {
+                Name = "Alternative",
+                ParentId = null,
+                Popularity = 0
+            };
+            Tag blues = new Tag
+            {
+                Name = "Blues",
+                ParentId = null,
+                Popularity = 0
+            };
+            Tag classic = new Tag
+            {
+                Name = "Classic",
+                ParentId = null,
+                Popularity = 0
+            };
+            Tag country = new Tag
+            {
+                Name = "Country",
+                ParentId = null,
+                Popularity = 0
+            };
+            Tag electronic = new Tag
+            {
+                Name = "Electronic",
+                ParentId = null,
+                Popularity = 0
+            };
+            Tag rap = new Tag {
+                Name = "Hip-Hop/Rap",
+                ParentId = null,
+                Popularity = 0                 
+            };
+            Tag indie = new Tag {
+                Name = "Indie-Pop",
+                ParentId = null,
+                Popularity = 0                 
+            };
+            Tag pop =  new Tag {
+                Name = "Pop",
+                ParentId = null,
+                Popularity = 0                 
+            };
+            Tag jazz = new Tag {
+                Name = "Jazz",
+                ParentId = null,
+                Popularity = 0                 
+            };
+            Tag reggae = new Tag {
+                Name = "Reggae",
+                ParentId = null,
+                Popularity = 0                 
+            };
+            Tag rock = new Tag
+            {
+                Name = "Rock",
+                ParentId = null,
+                Popularity = 0
+            };
+
+            context.Tags.AddOrUpdate(t => t.Name, alternative);
+            context.Tags.AddOrUpdate(t => t.Name, blues);
+            context.Tags.AddOrUpdate(t => t.Name, classic);
+            context.Tags.AddOrUpdate(t => t.Name, country);
+            context.Tags.AddOrUpdate(t => t.Name, electronic);
+            context.Tags.AddOrUpdate(t => t.Name, rap);
+            context.Tags.AddOrUpdate(t => t.Name, indie);
+            context.Tags.AddOrUpdate(t => t.Name, pop);
+            context.Tags.AddOrUpdate(t => t.Name, jazz);
+            context.Tags.AddOrUpdate(t => t.Name, reggae);
+            context.Tags.AddOrUpdate(t => t.Name, rock);
+
+            List<Tag> tags = new List<Tag> { 
+                new Tag{
+                Name = "Art Punk",
+                ParentTag = alternative,
+                Popularity = 0 
+            },
+                new Tag {
+                Name = "Hard Rock",
+                ParentTag = alternative,
+                Popularity = 0                 
+            },
+                new Tag {
+                Name = "Indie Rock",
+                ParentTag = alternative,
+                Popularity = 0                 
+            }, 
+                new Tag {
+                Name = "Punk",
+                ParentTag = alternative,
+                Popularity = 0                 
+            },
+                new Tag {
+                Name = "Progressive Rock",
+                ParentTag = alternative,
+                Popularity = 0                 
+            },
+                new Tag {
+                Name = "Chicago Blues",
+                ParentTag = blues,
+                Popularity = 0                 
+            },   
+                new Tag {
+                Name = "Avant-Garde",
+                ParentTag = classic,
+                Popularity = 0                 
+            },
+               new Tag {
+                Name = "Urban Cowboy",
+                ParentTag = country,
+                Popularity = 0                 
+            },
+                new Tag {
+                Name = "Industrial",
+                ParentTag = electronic,
+                Popularity = 0                 
+            },
+                new Tag {
+                Name = "Urban Cowboy",
+                ParentTag = country,
+                Popularity = 0                 
+            },
+                new Tag {
+                Name = "Hip-hop",
+                ParentTag = rap,
+                Popularity = 0                 
+            },
+               new Tag {
+                Name = "Acid Jazz",
+                ParentTag = jazz,
+                Popularity = 0                 
+            },
+               new Tag {
+                Name = "Dance/Pop",
+                ParentTag = pop,
+                Popularity = 0                 
+            },
+               new Tag {
+                Name = "Pop/Rock",
+                ParentTag = pop,
+                Popularity = 0                 
+            },
+               new Tag {
+                Name = "Roots Reggae",
+                ParentTag = reggae,
+                Popularity = 0                 
+            }, new Tag {
+                Name = "Roots Rock",
+                ParentTag = rock,
+                Popularity = 0                 
+            }, new Tag {
+                Name = "Hard Rock",
+                ParentTag = rock,
+                Popularity = 0                 
+            }, new Tag {
+                Name = "Metal",
+                ParentTag = rock,
+                Popularity = 0                 
+            }, new Tag {
+                Name = "Psychedelic",
+                ParentTag = rock,
+                Popularity = 0                 
+            }, new Tag {
+                Name = "Art Rock",
+                ParentTag = rock,
+                Popularity = 0                 
+            }};
+
+             foreach (var tag in tags)
+            {
+                context.Tags.AddOrUpdate(t => t.Name, tag);
+            }
+
         }
 
         private void seed_ekv(MusicPortalDbContext context)
