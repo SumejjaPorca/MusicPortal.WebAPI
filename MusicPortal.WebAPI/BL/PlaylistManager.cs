@@ -33,8 +33,9 @@ namespace MusicPortal.WebAPI.BL
             SongManager sm = new SongManager(_db);
 
             var playlists = from pl in _db.Playlists.Where(p => p.OwnerId.Equals(user_id))
-                            join pls in _db.PlaylistSongs.Include(pp => pp.Song) on pl.Id equals pls.PlaylistId
-                            group pls by pl into plays
+                            join pls in _db.PlaylistSongs.Include(pp => pp.Song) on pl.Id equals pls.PlaylistId into pls
+                            from plsg in pls.DefaultIfEmpty()
+                            group plsg by pl into plays
                             select new PlaylistVM
                             {
                                 Id = plays.Key.Id,
@@ -55,6 +56,28 @@ namespace MusicPortal.WebAPI.BL
                                         }) //sm.MakeHeartedSong(plays.Select(p => p.Song).AsQueryable(), user_id)
                             };
             return playlists;
+        }
+        
+        public PlaylistVM GetPlaylistById(long playlistId, string user_id, bool check_if_owner = false)
+        {
+            var playlist = _db.Playlists.Where(pl => pl.Id == playlistId).FirstOrDefault();
+            if (playlist == null)
+                throw new Exception("Playlist with this ID doesn't exist");
+
+            if (user_id != null && check_if_owner && !playlist.OwnerId.Equals(user_id))
+                throw new Exception("This user isn't owner of this playlist");
+
+            SongManager sm = new SongManager(_db);
+
+            var songs_query = _db.PlaylistSongs.Where(pls => pls.PlaylistId == playlistId).Join(_db.Songs, p => p.SongId, s => s.Id, (p, s) => s);
+            var songs = sm.MakeHeartedSong(songs_query, user_id);
+
+            return new PlaylistVM
+            {
+                Id = playlist.Id,
+                Title = playlist.Title,
+                Songs = songs.ToList()
+            };
         }
 
         public void addSong(long playlistId, long songId)

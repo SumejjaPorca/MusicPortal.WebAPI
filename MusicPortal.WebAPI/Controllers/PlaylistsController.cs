@@ -32,7 +32,7 @@ namespace MusicPortal.WebAPI.Controllers
         [Route("")]
         [Authorize]
         [HttpGet]
-        [ResponseType(typeof(PlaylistShortVM))]
+        [ResponseType(typeof(List<PlaylistShortVM>))]
         public HttpResponseMessage GetPlaylistFromUser()
         {
             HttpResponseMessage responseMsg;
@@ -58,7 +58,7 @@ namespace MusicPortal.WebAPI.Controllers
         [Route("full")]
         [Authorize]
         [HttpGet]
-        [ResponseType(typeof(PlaylistVM))]
+        [ResponseType(typeof(List<PlaylistVM>))]
         public HttpResponseMessage GetPlaylistFullFromUser()
         {
             HttpResponseMessage responseMsg;
@@ -80,6 +80,29 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
+        //GET api/playlists/13213
+        [Route("{id}")]
+        [Authorize]
+        [HttpGet]
+        [ResponseType(typeof(PlaylistVM))]
+        public IHttpActionResult GetPlaylistById(long id)
+        {
+            
+            try
+            {
+                string userId = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
+
+                var playlist = _mngr.GetPlaylistById(id, userId, true);
+
+                return Ok(playlist);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            
+        }
+        
         //POST api/playlists/add
         [Route("add")]
         [Authorize]
