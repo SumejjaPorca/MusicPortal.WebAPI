@@ -147,7 +147,7 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
-        // POST api/Song/heart
+        // POST api/Song/{id}/heart
         [Route("{id}/heart")]
         [Authorize]
         [HttpPost]
@@ -172,6 +172,35 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
+        // POST api/Song/{id}/unheart
+        [Route("{id}/unheart")]
+        [Authorize]
+        [HttpPost]
+        public HttpResponseMessage UnheartSong(long id)
+        {
+            HttpResponseMessage responseMsg;
+
+
+            if (_db.Songs.FirstOrDefault(s => s.Id == id) == null) //song doesn't exist
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
+            try
+            {
+                string user_id = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
+
+                _mngr.HeartSong(id, user_id);
+                responseMsg = new HttpResponseMessage(HttpStatusCode.OK);
+
+            }
+            catch (Exception e)
+            {
+                responseMsg = _helper.CreateErrorResponseMsg(new HttpError(e.Message), HttpStatusCode.InternalServerError);
+            }
+
+            return responseMsg;
+        }
+
         //TODO: manage this method, either delete it or add creatorId in Song entity
         // DELETE api/Song
         [Route("{songId}")]
@@ -190,5 +219,13 @@ namespace MusicPortal.WebAPI.Controllers
             return responseMsg;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
