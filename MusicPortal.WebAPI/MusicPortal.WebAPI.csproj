@@ -222,6 +222,7 @@
     <Compile Include="BL\SongManager.cs" />
     <Compile Include="BL\UserManager.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AIController.cs" />
     <Compile Include="Controllers\SongController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserController.cs" />

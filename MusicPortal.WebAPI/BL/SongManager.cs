@@ -13,10 +13,12 @@ namespace MusicPortal.WebAPI.BL
     public class SongManager
     {
         private Data.MusicPortalDbContext _db;
+        private AIManager _mngr;
 
         public SongManager(Data.MusicPortalDbContext db)
         {
             this._db = db;
+            _mngr = new AIManager(_db);
         }
 
         public IQueryable<HeartedSongVM> MakeHeartedSong(IQueryable<Song> songs, string user_id)
@@ -191,6 +193,7 @@ namespace MusicPortal.WebAPI.BL
                             });
                         
                     t.Popularity = t.Popularity + 1;
+                    _mngr.ReduceSubTree(userId, t.Id);
                 }
                 _db.SaveChanges();
             }

@@ -21,11 +21,12 @@ namespace MusicPortal.WebAPI.BL
         private static double _delta = 0.00001;
         private static int _songLimit = 15;
 
-        public AIManager() {
-            _db = new MusicPortalDbContext();
+        public AIManager(MusicPortalDbContext _db)
+        {
+             this._db = _db;
         }
 
-        public List<SongVM> GetFlow(string userId) {
+        public IQueryable<Song> GetFlow(string userId) {
             //get userTags with their neighbor* user* probability
             Dictionary<Tag, double> userTags = (from tu in _db.TagUsers
                          where tu.UserId == userId
@@ -33,7 +34,7 @@ namespace MusicPortal.WebAPI.BL
                          from t in _db.Tags
                          join parent in _db.Tags on t.ParentId.Value equals parent.Id
                          where t.ParentId == tags.Key
-                         select new KeyValuePair<Tag, double>(t, t.Popularity / (1 + tags.Sum(tag => tag.Popularity)))).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
+                         select new {tag = t, popularity = (double)t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
 
             //get songs
             List<long?> parentIds = userTags.Keys.Select(t => t.ParentId).Distinct().ToList();
@@ -53,7 +54,7 @@ namespace MusicPortal.WebAPI.BL
                          from t in _db.Tags
                          join parent in _db.Tags on t.ParentId equals parent.Id
                          where t.ParentId == tags.Key
-                         select new KeyValuePair<Tag, double>(t, t.Popularity / (1 + tags.Sum(tag => tag.Popularity)))).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
+                         select new {tag = t, popularity = (double) t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
             foreach (Tag song in realNeighborProbSongs.Keys) {
                 realNeighborProbSongs[song] *= userTags[song];
             }
@@ -66,7 +67,7 @@ namespace MusicPortal.WebAPI.BL
                          into tags
                          from t in _db.Tags
                          where t.ParentId == tags.Key && !songIds.Contains(t.Id)
-                         select new KeyValuePair<Tag, double>(t, t.Popularity / (1 + tags.Sum(tag => tag.Popularity)))).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
+                         select new {tag = t, popularity = (double) t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
 
             Dictionary<Tag, Dictionary<Tag, double>> authorSongs = new Dictionary<Tag, Dictionary<Tag, double>>();
             foreach (KeyValuePair<Tag, double> song in realNeighborProbSongs) {
@@ -90,7 +91,7 @@ namespace MusicPortal.WebAPI.BL
                          from t in _db.Tags
                          join parent in _db.Tags on t.ParentId equals parent.Id
                          where t.ParentId == tags.Key
-                         select new KeyValuePair<Tag, double>(t, t.Popularity / (1 + tags.Sum(tag => tag.Popularity)))).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
+                         select new {tag = t, popularity = (double) t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
             
             foreach (Tag author in realNeighborProbAuthors.Keys)
             {
@@ -106,7 +107,7 @@ namespace MusicPortal.WebAPI.BL
                              into tags
                              from t in _db.Tags
                              where t.ParentId == tags.Key && !songIds.Contains(t.Id)
-                             select new KeyValuePair<Tag, double>(t, t.Popularity / (1 + tags.Sum(tag => tag.Popularity)))).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
+                             select new { tag = t, popularity = (double)t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
 
             Dictionary<Tag, Dictionary<Tag, double>> authorTags = new Dictionary<Tag, Dictionary<Tag, double>>();
             foreach (KeyValuePair<Tag, double> author in realNeighborProbAuthors)
@@ -145,7 +146,7 @@ namespace MusicPortal.WebAPI.BL
             
             //TODO: extract songs from those tags
 
-            List<SongVM> _songs = (from st in _db.TagSongs
+            IQueryable<Song> _songs = (from st in _db.TagSongs
                                    join t in _db.Tags on st.TagId equals t.Id
                                    where userTags.Keys.Contains(t)
                                    group t by st.SongId
@@ -153,12 +154,7 @@ namespace MusicPortal.WebAPI.BL
                                        from s in _db.Songs
                                        where s.Id == ts.Key
                                        orderby ts.Sum(t => userTags[t]) descending
-                                       select new SongVM
-                                       {
-                                           Id = s.Id,
-                                           Link = s.Link,
-                                           Name = s.Name
-                                       }).Take(_songLimit).ToList();
+                                       select s).Take(_songLimit);
 
             return _songs;
 
