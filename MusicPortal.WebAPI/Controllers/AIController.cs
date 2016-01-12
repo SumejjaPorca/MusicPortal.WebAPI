@@ -35,7 +35,7 @@ namespace MusicPortal.WebAPI.Controllers
             try
             {
                 string userId = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
-                List<HeartedSongVM> songs = _songMngr.MakeHeartedSong(_mngr.GetFlow(userId), userId).ToList();
+                List<HeartedSongVM> songs = _mngr.GetFlow(userId);
 
                 responseMsg = _helper.CreateCustomResponseMsg(songs, HttpStatusCode.OK);
             }

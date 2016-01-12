@@ -107,7 +107,7 @@ namespace MusicPortal.WebAPI.Controllers
         [Route("add")]
         [Authorize]
         [HttpPost]
-        [ResponseType(typeof(PlaylistShortVM))]
+        [ResponseType(typeof(PlaylistVM))]
         public IHttpActionResult NewPlaylist(NewPlaylistVM model)
         {
             if (model.Title.Equals(String.Empty))
@@ -115,13 +115,15 @@ namespace MusicPortal.WebAPI.Controllers
             
             try
             {
+
                 string userId = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
 
                 var playlist = _mngr.makePlaylist(model.Title, userId);
-                PlaylistShortVM playlistVM = new PlaylistShortVM()
+                PlaylistVM playlistVM = new PlaylistVM()
                 {
                     Id = playlist.Id,
-                    Title = playlist.Title
+                    Title = playlist.Title,
+                    Songs = new List<HeartedSongVM>()
                 };
 
                 return Ok(playlistVM);

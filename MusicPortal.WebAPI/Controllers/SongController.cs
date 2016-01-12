@@ -108,22 +108,20 @@ namespace MusicPortal.WebAPI.Controllers
         [Route("{id}/play")]
         [AllowAnonymous]
         [HttpGet]
-        public HttpResponseMessage PlaySong(int id)
+        public IHttpActionResult PlaySong(int id)
         {
-            HttpResponseMessage responseMsg;
             try
             {
                 string userId = Microsoft.AspNet.Identity.IdentityExtensions.GetUserId(RequestContext.Principal.Identity);
                 if (userId != null)
                     _mngr.PlaySong(id, userId);
-                responseMsg = new HttpResponseMessage(HttpStatusCode.OK);
+                return Ok();
             }
             catch (Exception e)
             {
-                responseMsg = _helper.CreateErrorResponseMsg(new HttpError(e.Message), HttpStatusCode.BadRequest);
+                return BadRequest(e.Message);
             }
-
-            return responseMsg;
+            
         }
 
         // POST api/Song

@@ -197,7 +197,7 @@ namespace MusicPortal.WebAPI.BL
                 }
                 _db.SaveChanges();
             }
-            }
+        }
 
     }
 }
