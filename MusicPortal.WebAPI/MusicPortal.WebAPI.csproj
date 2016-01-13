@@ -246,13 +246,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201601030224311_luka3.cs" />
-    <Compile Include="Migrations\201601030224311_luka3.Designer.cs">
-      <DependentUpon>201601030224311_luka3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201601031509065_playlist_owner.cs" />
-    <Compile Include="Migrations\201601031509065_playlist_owner.Designer.cs">
-      <DependentUpon>201601031509065_playlist_owner.cs</DependentUpon>
+    <Compile Include="Migrations\201601131841010_s.cs" />
+    <Compile Include="Migrations\201601131841010_s.Designer.cs">
+      <DependentUpon>201601131841010_s.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -310,11 +306,8 @@
     <None Include="Properties\PublishProfiles\bezze.pubxml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201601030224311_luka3.resx">
-      <DependentUpon>201601030224311_luka3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601031509065_playlist_owner.resx">
-      <DependentUpon>201601031509065_playlist_owner.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201601131841010_s.resx">
+      <DependentUpon>201601131841010_s.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

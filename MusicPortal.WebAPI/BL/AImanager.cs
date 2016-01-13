@@ -162,16 +162,10 @@ namespace MusicPortal.WebAPI.BL
 
         public void ReduceSubTree(string userId, long tagId) {
 
-            long id = (from t in _db.TagUsers where t.Id == tagId && t.UserId == userId select t.ParentTagId).FirstOrDefault();
+            long? id = (from t in _db.TagUsers where t.TagId == tagId && t.UserId == userId select t.ParentTagId).FirstOrDefault();
             List<TagUser> tags = (from tu in _db.TagUsers
                         where tu.UserId == userId && tu.ParentTagId == id
-                        select new TagUser{
-                            Id = tu.Id,
-                            Popularity = tu.Popularity,
-                            TagId = tu.TagId,
-                            UserId = tu.UserId,
-                            ParentTagId = tu.ParentTagId
-                        }).ToList();
+                        select tu).ToList();
             //we add 1 to sum so that we consider the probability of listening new song
             double sum = 1.0 + Convert.ToDouble(tags.Sum(t => t.Popularity));
             foreach(TagUser t in tags){

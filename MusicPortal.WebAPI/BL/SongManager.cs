@@ -175,7 +175,8 @@ namespace MusicPortal.WebAPI.BL
                 if (song == null)
                     throw new Exception("Song with provided id does not exist in our database!");
 
-                List<long> tagIds = _db.TagSongs.Where(t => t.SongId == songId).Select(t => t.Id).ToList();
+                List<long> tagIds = song.Tags.Select(t => t.TagId).ToList();
+                
                 List<Tag> tags = _db.Tags.Where(t => tagIds.Contains(t.Id)).ToList();
                               
                 foreach (Tag t in tags)
@@ -189,7 +190,7 @@ namespace MusicPortal.WebAPI.BL
                                 Popularity = 1,
                                 TagId = t.Id,
                                 UserId = userId,
-                                ParentTagId = t.ParentId.Value
+                                ParentTagId = t.ParentId
                             });
                         
                     t.Popularity = t.Popularity + 1;
