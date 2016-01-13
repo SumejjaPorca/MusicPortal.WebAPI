@@ -26,7 +26,7 @@ namespace MusicPortal.WebAPI.BL
              this._db = _db;
         }
 
-        public IQueryable<Song> GetFlow(string userId) {
+        public List<HeartedSongVM> GetFlow(string userId) {
             //get userTags with their neighbor* user* probability
             Dictionary<Tag, double> userTags = (from tu in _db.TagUsers
                          where tu.UserId == userId
@@ -142,22 +142,30 @@ namespace MusicPortal.WebAPI.BL
                 userTags[t] = realNeighborProbSongs[t] * userTags[t.ParentTag];
             }
 
-            userTags = userTags.Take(_tagLimit).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
-            
+            var final_user_tags = userTags.Take(_tagLimit).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
+            var final_keys = final_user_tags.Keys;
             //TODO: extract songs from those tags
 
-            IQueryable<Song> _songs = (from st in _db.TagSongs
-                                   join t in _db.Tags on st.TagId equals t.Id
-                                   where userTags.Keys.Contains(t)
-                                   group t by st.SongId
-                                       into ts
-                                       from s in _db.Songs
-                                       where s.Id == ts.Key
-                                       orderby ts.Sum(t => userTags[t]) descending
-                                       select s).Take(_songLimit);
+            //In DB
+            var _songs = (from st in _db.TagSongs
+                          join t in _db.Tags on st.TagId equals t.Id
+                          where final_keys.Contains(t)
+                          group t by st.SongId into ts
+                          from s in _db.Songs
+                          where s.Id == ts.Key
+                          select new { Song = s, TSs = ts }).AsEnumerable();
+            //In memory
+            var _songs_ids = (from s in _songs orderby s.TSs.Sum(t => userTags[t]) descending select s.Song.Id).Take(_songLimit);
 
-            return _songs;
+            SongManager sm = new SongManager(_db);
 
+            var _s3 = (from s in _db.Songs where _songs_ids.Contains(s.Id) select s);
+
+            var hearted = sm.MakeHeartedSong(_s3, userId).ToList();
+
+            Random r = new Random();
+            //Shuffle
+            return hearted.OrderBy(h => r.Next()).ToList();
         }
 
         public void ReduceSubTree(string userId, long tagId) {
