@@ -80,6 +80,7 @@ namespace MusicPortal.WebAPI.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+            //AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(MusicPortalDbContext context)
@@ -97,7 +98,7 @@ namespace MusicPortal.WebAPI.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
-            seed_genres(context);
+            //seed_genres(context); // comment this out after first seed
             seed_ekv(context);
             seed_rundek(context);
             //TODO seed_rundek ^^
@@ -106,18 +107,18 @@ namespace MusicPortal.WebAPI.Migrations
 
         private void seed_genres(MusicPortalDbContext context)
         {
-           
-            context.Tags.AddOrUpdate(t => t.Name, alternative);
-            context.Tags.AddOrUpdate(t => t.Name, blues);
-            context.Tags.AddOrUpdate(t => t.Name, classic);
-            context.Tags.AddOrUpdate(t => t.Name, country);
-            context.Tags.AddOrUpdate(t => t.Name, electronic);
-            context.Tags.AddOrUpdate(t => t.Name, rap);
-            context.Tags.AddOrUpdate(t => t.Name, indie);
-            context.Tags.AddOrUpdate(t => t.Name, pop);
-            context.Tags.AddOrUpdate(t => t.Name, jazz);
-            context.Tags.AddOrUpdate(t => t.Name, reggae);
-            context.Tags.AddOrUpdate(t => t.Name, rock);
+
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, alternative);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, blues);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, classic);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, country);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, electronic);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, rap);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, indie);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, pop);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, jazz);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, reggae);
+            context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, rock);
 
             List<Tag> tags = new List<Tag> { 
                 new Tag{
@@ -205,7 +206,7 @@ namespace MusicPortal.WebAPI.Migrations
 
              foreach (var tag in tags)
             {
-                context.Tags.AddOrUpdate(t => t.Name, tag);
+                context.Tags.AddOrUpdate(t => new { t.Name, t.ParentId }, tag);
             }
 
         }
@@ -242,16 +243,16 @@ namespace MusicPortal.WebAPI.Migrations
             };
            
             context.Tags.AddOrUpdate(
-                t => t.Name, subgenre1
+                t => new { t.Name, t.ParentId }, subgenre1
             );
             context.Tags.AddOrUpdate(
-                t => t.Name, subgenre2
+                t => new { t.Name, t.ParentId }, subgenre2
             );
             context.Tags.AddOrUpdate(
-                t => t.Name, subgenre3
+                t => new { t.Name, t.ParentId }, subgenre3
             );
             context.Tags.AddOrUpdate(
-                t => t.Name, subgenre4
+                t => new { t.Name, t.ParentId }, subgenre4
             );
            
             var songs = new List<Song> {
@@ -302,12 +303,12 @@ namespace MusicPortal.WebAPI.Migrations
             foreach (var song in songs)
             {
                 context.Songs.AddOrUpdate(s => s.Link, song);
-                context.AuthorSongs.AddOrUpdate(new AuthorSong { Author = ekv, Song = song });
-                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = rock });
-                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre1 });
-                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre2 });
-                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre3 });
-                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre4 });
+                context.AuthorSongs.AddOrUpdate(a => new {a.SongId, a.AuthorId}, new AuthorSong { Author = ekv, Song = song });
+                context.TagSongs.AddOrUpdate(ts => new {ts.TagId, ts.SongId}, new TagSong { Song = song, Tag = rock });
+                context.TagSongs.AddOrUpdate(ts => new { ts.TagId, ts.SongId }, new TagSong { Song = song, Tag = subgenre1 });
+                context.TagSongs.AddOrUpdate(ts => new { ts.TagId, ts.SongId }, new TagSong { Song = song, Tag = subgenre2 });
+                context.TagSongs.AddOrUpdate(ts => new { ts.TagId, ts.SongId }, new TagSong { Song = song, Tag = subgenre3 });
+                context.TagSongs.AddOrUpdate(ts => new { ts.TagId, ts.SongId }, new TagSong { Song = song, Tag = subgenre4 });
 
                 Tag subgenre5 = new Tag
                 {
@@ -322,14 +323,14 @@ namespace MusicPortal.WebAPI.Migrations
                     Popularity = 0
                 };
                 context.Tags.AddOrUpdate(
-                t => t.Name, subgenre5
+                t => new { t.Name, t.ParentId }, subgenre5
                 ); 
                 context.Tags.AddOrUpdate(
-                 t => t.Name, subgenre6
+                t => new { t.Name, t.ParentId }, subgenre6
                 );
 
-                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre5 });
-                context.TagSongs.AddOrUpdate(new TagSong { Song = song, Tag = subgenre6 });
+                context.TagSongs.AddOrUpdate(ts => new {ts.SongId, ts.TagId}, new TagSong { Song = song, Tag = subgenre5 });
+                context.TagSongs.AddOrUpdate(ts => new {ts.SongId, ts.TagId}, new TagSong { Song = song, Tag = subgenre6 });
 
             }
         }
@@ -340,6 +341,47 @@ namespace MusicPortal.WebAPI.Migrations
             var rundek = new Author { Name = "Darko Rundek" };
             context.Authors.AddOrUpdate(
                 a => a.Name, rundek
+            );
+
+            Tag world = new Tag
+            {
+                Name = "World",
+                ParentId = null,
+                Popularity = 0
+            };
+
+            Tag funk = new Tag
+            {
+                Name = "Funk rock",
+                ParentTag = rock,
+                Popularity = 0
+            };
+            
+            Tag authorTag1 = new Tag
+            {
+                Name = "Darko Rundek",
+                ParentTag = funk,
+                Popularity = 0
+            };
+            Tag authorTag2 = new Tag
+            {
+                Name = "Darko Rundek",
+                ParentTag = world,
+                Popularity = 0
+            };
+
+           context.Tags.AddOrUpdate(
+                t => new { t.Name, t.ParentId }, world
+            );
+
+            context.Tags.AddOrUpdate(
+                t => new { t.Name, t.ParentId }, funk
+            );
+            context.Tags.AddOrUpdate(
+                t => new { t.Name, t.ParentId }, authorTag1
+            );
+            context.Tags.AddOrUpdate(
+                t => new { t.Name, t.ParentId }, authorTag2
             );
 
 
@@ -391,7 +433,36 @@ namespace MusicPortal.WebAPI.Migrations
             foreach (var song in songs)
             {
                 context.Songs.AddOrUpdate(s => s.Link, song);
-                context.AuthorSongs.AddOrUpdate(new AuthorSong { Author = rundek, Song = song });
+                context.AuthorSongs.AddOrUpdate(a => new {a.AuthorId, a.SongId}, new AuthorSong { Author = rundek, Song = song });
+
+                context.TagSongs.AddOrUpdate(ts => new {ts.TagId, ts.SongId}, new TagSong { Song = song, Tag = rock });
+                context.TagSongs.AddOrUpdate(ts => new {ts.TagId, ts.SongId}, new TagSong { Song = song, Tag = world });
+                context.TagSongs.AddOrUpdate(ts => new {ts.TagId, ts.SongId}, new TagSong { Song = song, Tag = funk });
+                context.TagSongs.AddOrUpdate(ts => new {ts.TagId, ts.SongId}, new TagSong { Song = song, Tag = authorTag1 });
+                context.TagSongs.AddOrUpdate(ts => new {ts.TagId, ts.SongId}, new TagSong { Song = song, Tag = authorTag2 });
+
+                Tag songNameTag1 = new Tag
+                {
+                    Name = song.Name,
+                    ParentTag = authorTag1,
+                    Popularity = 0
+                };
+                Tag songNameTag2 = new Tag
+                {
+                    Name = song.Name,
+                    ParentTag = authorTag2,
+                    Popularity = 0
+                };
+                context.Tags.AddOrUpdate(
+                t => new { t.Name, t.ParentId }, songNameTag1
+                );
+                context.Tags.AddOrUpdate(
+                 t => new {t.ParentId, t.Name}, songNameTag2
+                );
+
+                context.TagSongs.AddOrUpdate(ts => new {ts.TagId, ts.SongId}, new TagSong { Song = song, Tag = songNameTag1 });
+                context.TagSongs.AddOrUpdate(ts => new {ts.SongId, ts.TagId}, new TagSong { Song = song, Tag = songNameTag2 });
+
             }
         }
     }

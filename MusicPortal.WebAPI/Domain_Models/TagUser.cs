@@ -22,7 +22,7 @@ namespace MusicPortal.WebAPI.Domain_Models
 
         public int Popularity { get; set; }
 
-        public long ParentTagId { get; set; }
+        public long? ParentTagId { get; set; }
         [ForeignKey("ParentTagId")]
         public virtual Tag ParentTag { get; set; }
     }
