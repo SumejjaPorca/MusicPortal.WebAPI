@@ -165,7 +165,17 @@ namespace MusicPortal.WebAPI.BL
 
             Random r = new Random();
             //Shuffle
-            return hearted.OrderBy(h => r.Next()).ToList();
+            List<HeartedSongVM> sorted = new List<HeartedSongVM>();
+            foreach (var id in _songs_ids)
+            {
+                var song_with_this_id = hearted.Where(h => h.SongId == id).FirstOrDefault();
+
+                if (song_with_this_id == null)
+                    throw new Exception("Ne bi trebalo");
+
+                sorted.Add(song_with_this_id);
+            }
+            return hearted;
         }
 
         public void ReduceSubTree(string userId, long tagId) {
