@@ -26,5 +26,19 @@ namespace MusicPortal.WebAPI.Domain_Models
         public virtual Tag ParentTag { get; set; }
 
         public int Popularity { get; set; }
+        public override bool Equals(Object t)
+        {
+            if (t == null)
+                return false;
+            Tag tag = t as Tag;
+            if ((System.Object) tag == null)
+                return false;
+            return tag.Id == Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Convert.ToInt32(Id);
+        }
     }
 }

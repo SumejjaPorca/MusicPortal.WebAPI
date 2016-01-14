@@ -28,14 +28,23 @@ namespace MusicPortal.WebAPI.BL
 
         public List<HeartedSongVM> GetFlow(string userId) {
             //get userTags with their neighbor* user* probability
-            Dictionary<Tag, double> userTags = (from tu in _db.TagUsers
-                         where tu.UserId == userId
+
+            var userTags = (from tu in _db.TagUsers.Where(tu => tu.UserId == userId)
                          group tu by tu.ParentTagId into tags
                          from t in _db.Tags
                          join parent in _db.Tags on t.ParentId.Value equals parent.Id
-                         where t.ParentId == tags.Key
-                         select new {tag = t, popularity = (double)t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
+                         where t.ParentId == tags.Key && tags.Select(prop => prop.TagId).Contains(t.Id)
+                         select new {tag = t, popularity = (double)t.Popularity / (1.0 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
 
+            var taggilies = (from tu in _db.TagUsers
+                                 join t in _db.Tags on tu.TagId equals t.Id
+                                 where tu.UserId == userId && tu.ParentTagId == null
+                                 select t).ToList();
+            
+            foreach(Tag t in taggilies)
+            {
+                userTags[t] =(double) t.Popularity / (1.0 + taggilies.Sum(tag => tag.Popularity));
+            }
             //get songs
             List<long?> parentIds = userTags.Keys.Select(t => t.ParentId).Distinct().ToList();
             List<Tag> songs = userTags.Keys.Where(t => !parentIds.Contains(t.Id)).ToList();
@@ -48,19 +57,20 @@ namespace MusicPortal.WebAPI.BL
             List<long> genreIds = userTags.Keys.Where(t => parentIds.Contains(t.Id)).Select(t => t.ParentId.Value).ToList();
 
             //get real user* neighbor probabilites for all songs
-            Dictionary<Tag, double> realNeighborProbSongs = (from t in _db.Tags
+            var GlobalProbSongs = (from t in _db.Tags
                          where songIds.Contains(t.Id)
                          group t by t.ParentId into tags
                          from t in _db.Tags
-                         join parent in _db.Tags on t.ParentId equals parent.Id
                          where t.ParentId == tags.Key
-                         select new {tag = t, popularity = (double) t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
-            foreach (Tag song in realNeighborProbSongs.Keys) {
-                realNeighborProbSongs[song] *= userTags[song];
+                         select new {tag = t.ParentId, popularity = (double) 1 + tags.Sum(tag => tag.Popularity)}).Distinct().ToDictionary(kv => kv.tag, kv => kv.popularity);
+
+            foreach (Tag t in userTags.Keys.ToList()) {
+                if ( t.ParentId != null  && GlobalProbSongs.Keys.Contains(t.ParentId))
+                    userTags[t] *= (double)t.Popularity / GlobalProbSongs[t.ParentId];
             }
 
             //get new songs with higher global neighbor probabilities
-            Dictionary<Tag, double> newSongs = (
+            var newSongs = (
                          from t in _db.Tags
                          where parentIds.Contains(t.ParentId)
                          group t by t.ParentId
@@ -69,59 +79,72 @@ namespace MusicPortal.WebAPI.BL
                          where t.ParentId == tags.Key && !songIds.Contains(t.Id)
                          select new {tag = t, popularity = (double) t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
 
-            Dictionary<Tag, Dictionary<Tag, double>> authorSongs = new Dictionary<Tag, Dictionary<Tag, double>>();
-            foreach (KeyValuePair<Tag, double> song in realNeighborProbSongs) {
-                authorSongs[song.Key.ParentTag].Add(song.Key, song.Value);
+            Dictionary<Tag, Dictionary<Tag, double>> authorSongs = new Dictionary<Tag, Dictionary<Tag, double>>(new TagComparer());
+          
+            foreach (KeyValuePair<Tag, double> song in userTags) {
+                if (songIds.Contains(song.Key.Id))
+                {
+                    if (!authorSongs.Keys.Contains(song.Key.ParentTag))
+                        authorSongs[song.Key.ParentTag] = new Dictionary<Tag, double>();
+                    authorSongs[song.Key.ParentTag].Add(song.Key, song.Value);
+                }                
             }
 
-            foreach (Tag newSong in newSongs.Keys)
+            foreach (Tag newSong in newSongs.Keys.ToList())
             {
                 newSongs[newSong] *= 1.0 / (1.0 + authorSongs[newSong.ParentTag].Sum(kv => kv.Key.Popularity));
                 if (newSongs[newSong] >= authorSongs[newSong.ParentTag].Values.Max())
                 {
                     authorSongs[newSong.ParentTag].Add(newSong, newSongs[newSong]);
-                    realNeighborProbSongs.Add(newSong, newSongs[newSong]);
+                    userTags.Add(newSong, newSongs[newSong]);
+                    songIds.Add(newSong.Id);
                 }
             }
 
             //get real user* neighbor probabilites for all author tags
-            Dictionary<Tag, double> realNeighborProbAuthors = (from t in _db.Tags
+            var realNeighborProbAuthors = (from t in _db.Tags
                          where parentIds.Contains(t.Id)
                          group t by t.ParentId into tags
                          from t in _db.Tags
-                         join parent in _db.Tags on t.ParentId equals parent.Id
                          where t.ParentId == tags.Key
-                         select new {tag = t, popularity = (double) t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
+                         select new {tag = t.ParentId, popularity = (double) 1 + tags.Sum(tag => tag.Popularity)}).Distinct().ToDictionary(kv => kv.tag, kv => kv.popularity);
             
-            foreach (Tag author in realNeighborProbAuthors.Keys)
+            foreach (Tag author in userTags.Keys.ToList())
             {
-                realNeighborProbAuthors[author] *= userTags[author];
+                if(parentIds.Contains(author.Id))
+                    userTags[author] *= (double)author.Popularity/realNeighborProbAuthors[author.ParentId];
             }
 
 
             //get new authors with higher global neighbor probabilities
-            Dictionary<Tag, double> newAuthors = (
+            var newAuthors = (
                          from t in _db.Tags
                          where genreIds.Contains(t.ParentId.Value)
                          group t by t.ParentId
                              into tags
                              from t in _db.Tags
-                             where t.ParentId == tags.Key && !songIds.Contains(t.Id)
+                             where t.ParentId == tags.Key && !parentIds.Contains(t.Id)
                              select new { tag = t, popularity = (double)t.Popularity / (1 + tags.Sum(tag => tag.Popularity))}).ToDictionary(kv => kv.tag, kv => kv.popularity, new TagComparer());
 
-            Dictionary<Tag, Dictionary<Tag, double>> authorTags = new Dictionary<Tag, Dictionary<Tag, double>>();
-            foreach (KeyValuePair<Tag, double> author in realNeighborProbAuthors)
+            Dictionary<Tag, Dictionary<Tag, double>> authorTags = new Dictionary<Tag, Dictionary<Tag, double>>(new TagComparer());
+            foreach (KeyValuePair<Tag, double> author in userTags)
             {
-                authorTags[author.Key.ParentTag].Add(author.Key, author.Value);
+                if (parentIds.Contains(author.Key.Id))
+                {
+                    if (!authorTags.Keys.Contains(author.Key.ParentTag) && author.Key.ParentId != null)
+                        authorTags[author.Key.ParentTag] = new Dictionary<Tag, double>();
+                    authorTags[author.Key.ParentTag].Add(author.Key, author.Value);
+                }
             }
 
-            foreach (Tag newAuthor in newAuthors.Keys)
+            foreach (Tag newAuthor in newAuthors.Keys.ToList())
             {
                 newAuthors[newAuthor] *= 1.0 / (1.0 + authorTags[newAuthor.ParentTag].Sum(kv => kv.Key.Popularity));
                 if (newAuthors[newAuthor] >= authorTags[newAuthor.ParentTag].Values.Max())
                 {
                     authorTags[newAuthor.ParentTag].Add(newAuthor, newAuthors[newAuthor]);
-                    realNeighborProbAuthors.Add(newAuthor, newAuthors[newAuthor]);
+                    userTags.Add(newAuthor, newAuthors[newAuthor]);
+                    parentIds.Add(newAuthor.Id);
                 }
             }
             
@@ -129,17 +152,20 @@ namespace MusicPortal.WebAPI.BL
             List<Tag> genres = userTags.Keys.Where(t => genreIds.Contains(t.Id)).ToList();
 
             foreach(Tag t in genres){
+                if(t.ParentId != null && userTags.Keys.Contains(t.ParentTag))
                 userTags[t] *= userTags[t.ParentTag];
             }
 
-            foreach (Tag t in realNeighborProbAuthors.Keys)
+            foreach (Tag t in userTags.Keys.ToList())
             {
-                userTags[t] = realNeighborProbAuthors[t] * userTags[t.ParentTag];
+                if(parentIds.Contains(t.Id) && t.ParentId != null)
+                userTags[t] *= userTags[t.ParentTag];
             }
 
-            foreach (Tag t in realNeighborProbSongs.Keys)
+            foreach (Tag t in userTags.Keys.ToList())
             {
-                userTags[t] = realNeighborProbSongs[t] * userTags[t.ParentTag];
+                if (songIds.Contains(t.Id) && t.ParentId != null)
+                userTags[t] *= userTags[t.ParentTag];
             }
 
             var final_user_tags = userTags.Take(_tagLimit).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
@@ -198,7 +224,7 @@ namespace MusicPortal.WebAPI.BL
 
             public int GetHashCode(Tag obj)
             {
-                throw new NotImplementedException();
+                return Convert.ToInt32(obj.Id);
             }
         }
 
