@@ -115,5 +115,17 @@ namespace MusicPortal.WebAPI.BL
             return newP;
         }
 
+        public void deletePlaylist(long playlistId)
+        {
+            var playlist = _db.Playlists.Where(p => p.Id == playlistId).FirstOrDefault();
+
+            if (playlist == null)
+            {
+                throw new Exception("There is no playlist with this ID.");
+            }
+
+            _db.Playlists.Remove(playlist);
+            _db.SaveChanges();
+        }
     }
 }
