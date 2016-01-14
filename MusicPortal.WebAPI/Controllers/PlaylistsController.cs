@@ -102,7 +102,28 @@ namespace MusicPortal.WebAPI.Controllers
             }
             
         }
-        
+
+        //GET api/playlists/13213
+        [Route("{id}/delete")]
+        [Authorize]
+        [HttpGet]
+        [ResponseType(typeof(PlaylistVM))]
+        public IHttpActionResult DeletePlaylistById(long id)
+        {
+
+            try
+            {
+                _mngr.deletePlaylist(id);
+                
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+        }
+
         //POST api/playlists/add
         [Route("add")]
         [Authorize]
