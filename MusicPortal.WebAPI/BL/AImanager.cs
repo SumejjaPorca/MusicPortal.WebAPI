@@ -169,13 +169,13 @@ namespace MusicPortal.WebAPI.BL
             }
 
             var final_user_tags = userTags.Take(_tagLimit).ToDictionary(kv => kv.Key, kv => kv.Value, new TagComparer());
-            var final_keys = final_user_tags.Keys;
+            var final_keys = final_user_tags.Keys.Select(t => t.Id).ToList();
             //TODO: extract songs from those tags
 
             //In DB
             var _songs = (from st in _db.TagSongs
                           join t in _db.Tags on st.TagId equals t.Id
-                          where final_keys.Contains(t)
+                          where final_keys.Contains(t.Id)
                           group t by st.SongId into ts
                           from s in _db.Songs
                           where s.Id == ts.Key
