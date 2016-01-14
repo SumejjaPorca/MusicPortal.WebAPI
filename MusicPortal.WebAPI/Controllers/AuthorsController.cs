@@ -11,6 +11,7 @@ using System.Web.Http;
 
 namespace MusicPortal.WebAPI.Controllers
 {
+    [RoutePrefix("api/authors")]
     public class AuthorsController : ApiController
     {
         Data.MusicPortalDbContext _db = new Data.MusicPortalDbContext();
