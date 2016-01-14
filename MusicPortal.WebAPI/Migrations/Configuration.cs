@@ -99,8 +99,10 @@ namespace MusicPortal.WebAPI.Migrations
             //    );
             //
             //seed_genres(context); // comment this out after first seed
-            seed_ekv(context);
-            seed_rundek(context);
+            //seed_ekv(context);
+            //seed_rundek(context);
+            //seed_u2(context);
+            //seed_dubioza(context);
             //TODO seed_rundek ^^
             //Makedo: https://api.soundcloud.com/tracks/97731606/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea
         }
@@ -270,7 +272,7 @@ namespace MusicPortal.WebAPI.Migrations
                 },
                 new Song
                 {
-                    Name = "Geto", Link = @"https://api.soundcloud.com/tracks/31573988?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                    Name = "Geto", Link = @"https://api.soundcloud.com/tracks/31573988/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
                 },
                 new Song
                 {
@@ -463,6 +465,146 @@ namespace MusicPortal.WebAPI.Migrations
                 context.TagSongs.AddOrUpdate(ts => new {ts.TagId, ts.SongId}, new TagSong { Song = song, Tag = songNameTag1 });
                 context.TagSongs.AddOrUpdate(ts => new {ts.SongId, ts.TagId}, new TagSong { Song = song, Tag = songNameTag2 });
 
+            }
+        }
+
+        void seed_u2(MusicPortalDbContext context)
+        {
+            //https://api.soundcloud.com/tracks?linked_partitioning=1&client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea&offset=0&q=u2&limit=30
+            var u2 = new Author { Name = "U2" };
+            context.Authors.AddOrUpdate(
+                a => a.Name, u2
+            );
+
+            var songs = new List<Song> {
+                new Song
+                {
+                    Name = "Sunday Bloody Sunday", Link = @"https://api.soundcloud.com/tracks/39654171/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Beautiful Day", Link = @"https://api.soundcloud.com/tracks/88295642/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Ordinary Love", Link = @"https://api.soundcloud.com/tracks/135296438/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "One", Link = @"https://api.soundcloud.com/tracks/33825002/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Invisible", Link = @"https://api.soundcloud.com/tracks/33825002/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Stuck In A Moment You Can't Get Out Of", Link = @"https://api.soundcloud.com/tracks/57577256/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "With Or Without You", Link = @"https://api.soundcloud.com/tracks/50356349/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "City Of Blinding", Link = @"https://api.soundcloud.com/tracks/134374508/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Pride (In The Name Of Love)", Link = @"https://api.soundcloud.com/tracks/97731096/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                }
+            };
+
+            foreach (var song  in songs)
+            {
+                context.Songs.AddOrUpdate(s => s.Link, song);
+                context.AuthorSongs.AddOrUpdate(a => new { a.AuthorId, a.SongId }, new AuthorSong { Author = u2, Song = song });
+
+            }
+        }
+
+        void seed_dubioza(MusicPortalDbContext context)
+        {
+            var dub = new Author { Name = "Dubioza Kolektiv" };
+            context.Authors.AddOrUpdate(
+                a => a.Name, dub
+            );
+
+
+            var songs = new List<Song> {
+                new Song
+                {
+                    Name = "USA", Link = @"https://api.soundcloud.com/tracks/11848259/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Kažu", Link = @"https://api.soundcloud.com/tracks/71379514/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Balkan Funk", Link = @"https://api.soundcloud.com/tracks/71379518/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Walter", Link = @"https://api.soundcloud.com/tracks/71379510/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Recesija", Link = @"https://api.soundcloud.com/tracks/71379511/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Free MP3 (The Pirate Bay Song)", Link = @"https://api.soundcloud.com/tracks/223222238/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Euro Song", Link = @"https://api.soundcloud.com/tracks/11846016/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Vidi vidi vidi", Link = @"https://api.soundcloud.com/tracks/71379515/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Um klade valja", Link = @"https://api.soundcloud.com/tracks/71379509/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+
+                new Song
+                {
+                    Name = "Volio BIH", Link = @"https://api.soundcloud.com/tracks/223967333/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "No Rscape (From Balkan)", Link = @"https://api.soundcloud.com/tracks/223222392/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Brijuni", Link = @"https://api.soundcloud.com/tracks/223967534/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+
+                new Song
+                {
+                    Name = "Krivo je more", Link = @"https://api.soundcloud.com/tracks/223967049/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Tranzicija", Link = @"https://api.soundcloud.com/tracks/223967756/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Kupi", Link = @"https://api.soundcloud.com/tracks/223967175/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                },
+                new Song
+                {
+                    Name = "Domacica", Link = @"https://api.soundcloud.com/tracks/225131942/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea"
+                }
+    
+            };
+
+            foreach (var song in songs)
+            {
+                context.Songs.AddOrUpdate(s => s.Link, song);
+                context.AuthorSongs.AddOrUpdate(a => new { a.AuthorId, a.SongId }, new AuthorSong { Author = dub, Song = song });
             }
         }
     }
