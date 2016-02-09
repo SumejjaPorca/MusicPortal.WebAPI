@@ -183,6 +183,7 @@ namespace MusicPortal.WebAPI.BL
             //In memory
             var _songs_ids = (from s in _songs orderby s.TSs.Sum(t => userTags[t]) descending select s.Song.Id).Take(_songLimit);
 
+           
             SongManager sm = new SongManager(_db);
 
             var _s3 = (from s in _db.Songs where _songs_ids.Contains(s.Id) select s);
@@ -201,7 +202,7 @@ namespace MusicPortal.WebAPI.BL
 
                 sorted.Add(song_with_this_id);
             }
-            return hearted;
+            return sorted;
         }
 
         public void ReduceSubTree(string userId, long tagId) {
